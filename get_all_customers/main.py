@@ -24,13 +24,15 @@ def lambda_handler(event, context):
     list = []
     for row in cursor:
         list.append(parse_row(row))
-    result = ','.join(list)
+    result = '['    
+    result += ','.join(list)
+    result += ']'
     return done(result)
     
 def parse_row(row):
     result = '{'
-	items = list(row.items())
-	result += "ID:"+items[0][1]+","
-	result += "Name:"+items[1][1]
+    items = list(row.items())
+    result += "\"ID\":\""+str(items[0][1])+"\","
+    result += "\"Name\":\""+items[1][1]+"\""
     result += '}'
-    return result    
+    return result  
