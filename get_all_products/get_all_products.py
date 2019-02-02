@@ -20,7 +20,7 @@ def done(response):
 
 def lambda_handler(event, context):
     db = postgresql.open('pq://' + username + ':' + password + '@' + host + ':' + port + '/' + db_name)
-    cursor = db.prepare("SELECT \"ProductID\", \"Name\" FROM public.\"Products\"")
+    cursor = db.prepare("SELECT \"ProductID\", \"Name\" FROM public.\"Product\"")
     list = []
     for row in cursor:
         list.append(parse_row(row))
