@@ -27,6 +27,7 @@ def lambda_handler(event, context):
     result = '['    
     result += ','.join(list)
     result += ']'
+    db.close()
     return done(result)
     
 def parse_row(row):

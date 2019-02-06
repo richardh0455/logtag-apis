@@ -43,6 +43,7 @@ def lambda_handler(event, context):
     customer += ','
     customer += parse_shipping_addresses(db, customer_id)
     customer += '}';
+    db.close()
     return done(customer)
     
 def parse_row(row):

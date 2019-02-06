@@ -39,6 +39,7 @@ def lambda_handler(event, context):
     for row in cursor:
         list.append(parse_row(row))
     result = ','.join(list)
+    db.close()
     return done(result)
     
 def parse_row(row):

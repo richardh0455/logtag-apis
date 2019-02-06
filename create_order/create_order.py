@@ -22,6 +22,7 @@ def lambda_handler(event, context):
     db = postgresql.open('pq://' + username + ':' + password + '@' + host + ':' + port + '/' + db_name)
     invoice_id = create_invoice(db, int(event["customerID"]))
     create_invoice_items(db, invoice_id, event["invoiceLines"])
+    db.close()
     return done(json.dumps('{ \"InvoiceID\":\"'+str(invoice_id)+'\"}'))
     
 def create_invoice(db, customerID):
