@@ -20,19 +20,21 @@ def done(response):
 
 def lambda_handler(event, context):
     db = postgresql.open('pq://' + username + ':' + password + '@' + host + ':' + port + '/' + db_name)
-    cursor = db.prepare("SELECT \"CustomerID\", \"Name\" FROM public.\"Customer\"")
-    list = []
-    for row in cursor:
-        list.append(parse_row(row))
-    result = '['    
-    result += ','.join(list)
-    result += ']'
-    return done(result)
+    invoice_id = create_invoice(db, int(event["customerID"]))
+    create_invoice_items(db, invoice_id, event["invoiceLines"])
+    return done(json.dumps('{ \"InvoiceID\":\"'+str(invoice_id)+'\"}'))
     
-def parse_row(row):
-    result = '{'
-    items = list(row.items())
-    result += "\"ID\":\""+str(items[0][1])+"\","
-    result += "\"Name\":\""+items[1][1]+"\""
-    result += '}'
-    return result  
+def create_invoice(db, customerID):
+    insert_invoice = db.prepare("INSERT into public.\"Invoice\" (\"CustomerID\")  VALUES ( $1 ) RETURNING \"InvoiceID\"")
+    row = insert_invoice(customerID)
+    invoiceID = list(row)[0][0]
+    return invoiceID
+
+def create_invoice_items(db, invoiceID, invoiceLines):
+    insert_line = db.prepare("INSERT into public.\"InvoiceLine\" (\"InvoiceID\", \"Quantity\", \"ProductID\", \"Pricing\", \"VariationID\")  VALUES ( $1, $2, $3, $4, $5 )")
+    for line in invoiceLines:
+        variationID = line["VariationID"]
+        if(line["VariationID"] == "NULL"):
+            variationID = "0"
+        insert_line(invoiceID, int(line["Quantity"]), int(line["ProductID"]), int(line["Price"]), int(variationID))
+    
