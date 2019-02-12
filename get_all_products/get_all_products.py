@@ -1,11 +1,11 @@
 import postgresql
 import json
 
-host  = "<ELIDED>"
-port = '<ELIDED>'
-username = "<ELIDED>"
-password = "<ELIDED>"
-db_name = "<ELIDED>"
+host  = os.environ['RDS_HOST']
+port = os.environ['PORT']
+username = os.environ['USERNAME']
+password = os.environ['PASSWORD']
+db_name = os.environ['DB_NAME']
 
 def done(response):
     return {
@@ -27,6 +27,7 @@ def lambda_handler(event, context):
     result = '['    
     result += ','.join(list)
     result += ']'
+    db.close()
     return done(result)
     
 def parse_row(row):
