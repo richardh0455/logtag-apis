@@ -24,9 +24,9 @@ phases:
     #commands:
       # - command
       # - command
-#artifacts:
-  #files:
-  #  - 'create_customer/*'
+artifacts:
+  files:
+    - create_customer.zip
     # - location
   #name: $(date +%Y-%m-%d)
   #discard-paths: yes
