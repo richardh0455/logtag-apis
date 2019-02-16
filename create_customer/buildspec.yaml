@@ -19,7 +19,6 @@ phases:
       # - command
   build:
     commands:
-      zip -r create_customer.zip *;
       # - command
   #post_build:
     #commands:
@@ -27,11 +26,11 @@ phases:
       # - command
 #artifacts:
   #files:
-    # - location
+    ./*
     # - location
   #name: $(date +%Y-%m-%d)
   #discard-paths: yes
-  #base-directory: location
+  base-directory: create_customer
 #cache:
   #paths:
     # - paths
