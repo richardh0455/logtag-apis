@@ -26,11 +26,11 @@ phases:
       # - command
 artifacts:
   files:
-    - '/*'
+    - 'create_customer/*'
     # - location
   #name: $(date +%Y-%m-%d)
   #discard-paths: yes
-  base-directory: create_customer
+  #base-directory: create_customer
 #cache:
   #paths:
     # - paths
