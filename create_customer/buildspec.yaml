@@ -19,7 +19,7 @@ phases:
       # - command
   build:
     commands:
-      - zip -r -j -q create_customer.zip create_customer/*
+      - zip -r create_customer.zip create_customer/*
   #post_build:
     #commands:
       # - command
