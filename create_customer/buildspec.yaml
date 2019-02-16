@@ -24,8 +24,8 @@ phases:
     #commands:
       # - command
       # - command
-#artifacts:
-  #files:
+artifacts:
+  files:
     ./*
     # - location
   #name: $(date +%Y-%m-%d)
