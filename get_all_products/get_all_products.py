@@ -1,5 +1,6 @@
 import postgresql
 import json
+import os
 
 host  = os.environ['RDS_HOST']
 port = os.environ['PORT']
