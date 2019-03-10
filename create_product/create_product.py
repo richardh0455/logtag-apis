@@ -21,14 +21,14 @@ def done(response):
 
 def lambda_handler(event, context):
     db = postgresql.open('pq://' + username + ':' + password + '@' + host + ':' + port + '/' + db_name)
-    customer_id = create_customer(db, event["Name"],event["EmailAddress"],event["BillingAddress"], event["Region"] )
+    product_id = create_product(db, event["Name"],event["Description"],int(event["CostPrice"]) )
     db.close()
-    return done(json.dumps('{ \"CustomerID\":\"'+str(customer_id)+'\"}'))
+    return done(json.dumps('{ \"ProductID\":\"'+str(product_id)+'\"}'))
     
-def create_customer(db, name, email, billing_address, region):
-    create_customer = db.prepare("INSERT into public.\"Customer\" (\"Name\", \"Contact_Email\", \"Billing_Address\", \"Region\" )  VALUES ( $1, $2, $3, $4 ) RETURNING \"CustomerID\"")
-    row = create_customer(name, email, billing_address, region)
-    customer_id = list(row)[0][0]
-    return customer_id
+def create_product(db, name, description, cost_price):
+    create_product = db.prepare("INSERT into public.\"Product\" (\"Name\", \"Description\", \"CostPrice\" )  VALUES ( $1, $2, $3 ) RETURNING \"ProductID\"")
+    row = create_product(name, description, cost_price)
+    product_id = list(row)[0][0]
+    return product_id
 
     
