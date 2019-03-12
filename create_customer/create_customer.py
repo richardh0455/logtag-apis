@@ -1,4 +1,4 @@
-import postgresql
+import psycopg2
 import json
 import os
 
@@ -20,15 +20,19 @@ def done(response):
     }
 
 def lambda_handler(event, context):
-    db = postgresql.open('pq://' + username + ':' + password + '@' + host + ':' + port + '/' + db_name)
-    customer_id = create_customer(db, event["Name"],event["EmailAddress"],event["BillingAddress"], event["Region"] )
-    db.close()
+    connection = psycopg2.connect(user=username,
+                                  password=password,
+                                  host=host,
+                                  port=port,
+                                  database=db_name)
+    cursor = connection.cursor()                              
+    customer_id = create_customer(cursor, event["Name"],event["EmailAddress"],event["BillingAddress"], event["Region"] )
+    cursor.close()
     return done(json.dumps('{ \"CustomerID\":\"'+str(customer_id)+'\"}'))
     
-def create_customer(db, name, email, billing_address, region):
-    create_customer = db.prepare("INSERT into public.\"Customer\" (\"Name\", \"Contact_Email\", \"Billing_Address\", \"Region\" )  VALUES ( $1, $2, $3, $4 ) RETURNING \"CustomerID\"")
-    row = create_customer(name, email, billing_address, region)
-    customer_id = list(row)[0][0]
-    return customer_id
+def create_customer(cursor, name, email, billing_address, region):
+    cursor.execute("INSERT into public.\"Customer\" (\"Name\", \"Contact_Email\", \"Billing_Address\", \"Region\" )  VALUES ( %s, %s, %s, %s ) RETURNING \"CustomerID\"", (name, email, billing_address, region))
+    row = cursor.getchone()
+    return row[0]
 
     
