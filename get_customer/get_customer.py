@@ -1,4 +1,4 @@
-import postgresql
+import psycopg2
 import json
 import os
 
@@ -31,8 +31,12 @@ def fail():
     }    
 
 def lambda_handler(event, context):
-    print('Received event: '+json.dumps(event))
-    db = postgresql.open('pq://' + username + ':' + password + '@' + host + ':' + port + '/' + db_name)
+    connection = psycopg2.connect(user=username,
+                                  password=password,
+                                  host=host,
+                                  port=port,
+                                  database=db_name)
+    cursor = connection.cursor()
     try:
         customer_id = int(event["id"])
     except:
@@ -40,39 +44,32 @@ def lambda_handler(event, context):
         return fail()
         
     customer = '{';
-    customer += parse_contact_info(db, customer_id)
+    customer += parse_contact_info(cursor, customer_id)
     customer += ','
-    customer += parse_shipping_addresses(db, customer_id)
+    customer += parse_shipping_addresses(cursor, customer_id)
     customer += '}';
-    db.close()
+    connection.commit()
+    cursor.close()
+    connection.close()
     return done(customer)
     
-def parse_row(row):
-    result = '{'
-    for index, item in enumerate(row.items()):
-        if index != 0:
-            result += ','
-        result += str('\"'+item[0]+'\"') + ':\"' + str(item[1]) + '\"'
-    result += '}'
-    return result
 
-def parse_contact_info(db, customer_id):
-    cursor = db.prepare("SELECT * FROM public.\"Customer\" WHERE \"CustomerID\"="+str(customer_id))
-    contact_info = cursor.first()
+def parse_contact_info(cursor, customer_id):
+    cursor.execute("SELECT \"Name\", \"Contact_Email\", \"Billing_Address\", \"Region\"  FROM public.\"Customer\" WHERE \"CustomerID\"= %s",(str(customer_id),))
+    row = cursor.fetchone()
     result = '\"ContactInfo\": {'
-    for index, item in enumerate(contact_info.items()):
-        if index != 0:
-            result += ','
-        result += str('\"'+item[0]+'\"') + ':\"' + str(item[1]) + '\"'
+    result += "\"Name\": \""+str(row[0])+"\"," + '\"Contact_Email\": \"' + str(row[1]) + '\",' + '\"Billing_Address\": \"' + str(row[2]) + '\",' + '\"Region\": \"' + str(row[3]) + '\"' 
     result += '}'
     return result     
     
-def parse_shipping_addresses(db, customer_id):
-    cursor = db.prepare("SELECT * FROM public.\"CustomerShippingAddress\" WHERE \"CustomerID\"="+str(customer_id))
+def parse_shipping_addresses(cursor, customer_id):
+    cursor.execute("SELECT \"ShippingAddressID\", \"ShippingAddress\" FROM public.\"CustomerShippingAddress\" WHERE \"CustomerID\"= %s", (str(customer_id),))
     result = '\"ShippingAddresses\": ['
     list =[]
-    for row in cursor:
-        list.append(parse_row(row))
+    for row in cursor.fetchall():
+        result = '{'
+        result += "\"ID\": \""+str(row[0])+"\"," + '\"ShippingAddress\": \"' + str(row[1]) + '\"'
+        result += '}'
     result += ','.join(list)
     result += ']'
     return result 

@@ -29,18 +29,26 @@ def fail():
     }    
 
 def lambda_handler(event, context):
-    print('Received event: '+json.dumps(event))
-    db = postgresql.open('pq://' + username + ':' + password + '@' + host + ':' + port + '/' + db_name)
+    connection = psycopg2.connect(user=username,
+                                  password=password,
+                                  host=host,
+                                  port=port,
+                                  database=db_name)
+    cursor = connection.cursor()
     try:
         id = int(event["id"])
     except:
         return fail()
-    cursor = db.prepare("<Select Statement>")
+    cursor.execute("SELECT * FROM public.\"Invoice\" WHERE \"InvoiceID\"= %s",(str(id),))
+	##TODO:: Implement select statement 
+    cursor.execute("SELECT * FROM public.\"Invoice\" WHERE \"InvoiceID\"= %s",(str(id),))
     list = []
     for row in cursor:
         list.append(parse_row(row))
     result = ','.join(list)
-    db.close()
+    connection.commit()
+    cursor.close()
+    connection.close()
     return done(result)
     
 def parse_row(row):

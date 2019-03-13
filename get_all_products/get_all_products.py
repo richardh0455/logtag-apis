@@ -1,4 +1,4 @@
-import postgresql
+import psycopg2
 import json
 import os
 
@@ -20,21 +20,27 @@ def done(response):
     }
 
 def lambda_handler(event, context):
-    db = postgresql.open('pq://' + username + ':' + password + '@' + host + ':' + port + '/' + db_name)
-    cursor = db.prepare("SELECT \"ProductID\", \"Name\" FROM public.\"Product\"")
+    connection = psycopg2.connect(user=username,
+                                  password=password,
+                                  host=host,
+                                  port=port,
+                                  database=db_name)
+    cursor = connection.cursor()
+    cursor.execute("SELECT \"ProductID\", \"Name\" FROM public.\"Product\"")
     list = []
-    for row in cursor:
+    for row in cursor.fetchall():
         list.append(parse_row(row))
     result = '['    
     result += ','.join(list)
     result += ']'
-    db.close()
+    connection.commit()
+    cursor.close()
+    connection.close()
     return done(result)
     
 def parse_row(row):
     result = '{'
-    items = list(row.items())
-    result += "\"ID\":\""+str(items[0][1])+"\","
-    result += "\"Name\":\""+items[1][1]+"\""
+    result += "\"ID\":\""+str(row[0])+"\","
+    result += "\"Name\":\""+row[1]+"\""
     result += '}'
     return result  
