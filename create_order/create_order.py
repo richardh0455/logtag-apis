@@ -1,4 +1,4 @@
-import postgresql
+import psycopg2
 import json
 import os
 
@@ -20,23 +20,29 @@ def done(response):
     }
 
 def lambda_handler(event, context):
-    db = postgresql.open('pq://' + username + ':' + password + '@' + host + ':' + port + '/' + db_name)
-    invoice_id = create_invoice(db, int(event["customerID"]))
-    create_invoice_items(db, invoice_id, event["invoiceLines"])
-    db.close()
+    connection = psycopg2.connect(user=username,
+                                  password=password,
+                                  host=host,
+                                  port=port,
+                                  database=db_name)
+    cursor = connection.cursor()                              
+    invoice_id = create_invoice(cursor, int(event["customerID"]))
+    create_invoice_items(cursor, invoice_id, event["invoiceLines"])
+    connection.commit()
+    cursor.close()
+    connection.close()
     return done(json.dumps('{ \"InvoiceID\":\"'+str(invoice_id)+'\"}'))
     
-def create_invoice(db, customerID):
-    insert_invoice = db.prepare("INSERT into public.\"Invoice\" (\"CustomerID\")  VALUES ( $1 ) RETURNING \"InvoiceID\"")
-    row = insert_invoice(customerID)
-    invoiceID = list(row)[0][0]
-    return invoiceID
+def create_invoice(cursor, customerID):
+    cursor.execute("INSERT into public.\"Invoice\" (\"CustomerID\")  VALUES ( %s ) RETURNING \"InvoiceID\"", [customerID])
+    row = cursor.fetchone()
+    return row[0]
 
-def create_invoice_items(db, invoiceID, invoiceLines):
-    insert_line = db.prepare("INSERT into public.\"InvoiceLine\" (\"InvoiceID\", \"Quantity\", \"ProductID\", \"Pricing\", \"VariationID\")  VALUES ( $1, $2, $3, $4, $5 )")
+def create_invoice_items(cursor, invoiceID, invoiceLines):
+    
     for line in invoiceLines:
         variationID = line["VariationID"]
         if(line["VariationID"] == "NULL"):
             variationID = "0"
-        insert_line(invoiceID, int(line["Quantity"]), int(line["ProductID"]), int(line["Price"]), int(variationID))
+        cursor.execute("INSERT into public.\"InvoiceLine\" (\"InvoiceID\", \"Quantity\", \"ProductID\", \"Pricing\", \"VariationID\")  VALUES ( %s, %s, %s, %s, %s )", (invoiceID, int(line["Quantity"]), int(line["ProductID"]), int(line["Price"]),int(variationID)))    
     

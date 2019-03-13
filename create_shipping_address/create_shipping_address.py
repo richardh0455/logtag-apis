@@ -1,4 +1,4 @@
-import postgresql
+import psycopg2
 import json
 import os
 
@@ -20,15 +20,21 @@ def done(response):
     }
 
 def lambda_handler(event, context):
-    db = postgresql.open('pq://' + username + ':' + password + '@' + host + ':' + port + '/' + db_name)
-    shipping_address_id = create_shipping_address(db, event[""],event[""],event[""], event[""] )
-    db.close()
-    return done(json.dumps('{ \"CustomerID\":\"'+str(shipping_address_id)+'\"}'))
+    connection = psycopg2.connect(user=username,
+                                  password=password,
+                                  host=host,
+                                  port=port,
+                                  database=db_name)
+    cursor = connection.cursor()   
+    shipping_address_id = create_shipping_address(cursor, event["CustomerID"],event["ShippingAddress"])
+    connection.commit()
+    cursor.close()
+    connection.close()
+    return done(json.dumps('{ \"ShippingAddressID\":\"'+str(shipping_address_id)+'\"}'))
     
-def create_shipping_address(db, name, email, billing_address, region):
-    create_shipping_address = db.prepare("INSERT into public.\"Shipping_Address\" (\"Name\", \"Contact_Email\", \"Billing_Address\", \"Region\" )  VALUES ( $1, $2, $3, $4 ) RETURNING \"ShippingAddressID\"")
-    row = create_shipping_address(name, email, billing_address, region)
-    shipping_address_id = list(row)[0][0]
-    return shipping_address_id
+def create_shipping_address(cursor, customer_id, shipping_address):
+    create_shipping_address = cursor.execute("INSERT into public.\"CustomerShippingAddress\" (\"CustomerID\", \"ShippingAddress\")  VALUES ( %s, %s) RETURNING \"ShippingAddressID\"", (customer_id, shipping_address))
+    row = cursor.fetchone()
+    return row[0]
 
     

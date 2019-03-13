@@ -1,4 +1,4 @@
-import postgresql
+import psycopg2
 import json
 import os
 
@@ -20,15 +20,21 @@ def done(response):
     }
 
 def lambda_handler(event, context):
-    db = postgresql.open('pq://' + username + ':' + password + '@' + host + ':' + port + '/' + db_name)
-    product_id = create_product(db, event["Name"],event["Description"],int(event["CostPrice"]) )
-    db.close()
+    connection = psycopg2.connect(user=username,
+                                  password=password,
+                                  host=host,
+                                  port=port,
+                                  database=db_name)
+    cursor = connection.cursor()                               
+    product_id = create_product(cursor, event["Name"],event["Description"],int(event["CostPrice"]) )
+    connection.commit()
+    cursor.close()
+    connection.close()
     return done(json.dumps('{ \"ProductID\":\"'+str(product_id)+'\"}'))
     
-def create_product(db, name, description, cost_price):
-    create_product = db.prepare("INSERT into public.\"Product\" (\"Name\", \"Description\", \"CostPrice\" )  VALUES ( $1, $2, $3 ) RETURNING \"ProductID\"")
-    row = create_product(name, description, cost_price)
-    product_id = list(row)[0][0]
-    return product_id
+def create_product(cursor, name, description, cost_price):
+    cursor.execute("INSERT into public.\"Product\" (\"Name\", \"Description\", \"CostPrice\" )  VALUES ( %s, %s, %s ) RETURNING \"ProductID\"",(name, description, cost_price))
+    row = cursor.fetchone()
+    return row[0]
 
     

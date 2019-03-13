@@ -27,12 +27,14 @@ def lambda_handler(event, context):
                                   database=db_name)
     cursor = connection.cursor()                              
     customer_id = create_customer(cursor, event["Name"],event["EmailAddress"],event["BillingAddress"], event["Region"] )
+    connection.commit()
     cursor.close()
+    connection.close()
     return done(json.dumps('{ \"CustomerID\":\"'+str(customer_id)+'\"}'))
     
 def create_customer(cursor, name, email, billing_address, region):
     cursor.execute("INSERT into public.\"Customer\" (\"Name\", \"Contact_Email\", \"Billing_Address\", \"Region\" )  VALUES ( %s, %s, %s, %s ) RETURNING \"CustomerID\"", (name, email, billing_address, region))
-    row = cursor.getchone()
+    row = cursor.fetchone()
     return row[0]
 
     
