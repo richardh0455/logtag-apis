@@ -65,7 +65,7 @@ def parse_shipping_addresses(cursor, customer_id):
     result = '\"ShippingAddresses\": ['
     list =[]
     for row in cursor.fetchall():
-        result = '{'
+        result += '{'
         result += "\"ID\": \""+str(row[0])+"\"," + '\"ShippingAddress\": \"' + str(row[1]) + '\"'
         result += '}'
     result += ','.join(list)
