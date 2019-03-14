@@ -7,6 +7,11 @@ port = os.environ['PORT']
 username = os.environ['USERNAME']
 password = os.environ['PASSWORD']
 db_name = os.environ['DB_NAME']
+connection = psycopg2.connect(user=username,
+                                  password=password,
+                                  host=host,
+                                  port=port,
+                                  database=db_name)
 
 def done(response):
     return {
@@ -20,11 +25,7 @@ def done(response):
     }
 
 def lambda_handler(event, context):
-    connection = psycopg2.connect(user=username,
-                                  password=password,
-                                  host=host,
-                                  port=port,
-                                  database=db_name)
+    
     cursor = connection.cursor()
     cursor.execute("SELECT \"ProductID\", \"Name\" FROM public.\"Product\"")
     list = []
@@ -35,7 +36,6 @@ def lambda_handler(event, context):
     result += ']'
     connection.commit()
     cursor.close()
-    connection.close()
     return done(result)
     
 def parse_row(row):

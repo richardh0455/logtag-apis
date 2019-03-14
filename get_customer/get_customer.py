@@ -8,7 +8,11 @@ port = os.environ['PORT']
 username = os.environ['USERNAME']
 password = os.environ['PASSWORD']
 db_name = os.environ['DB_NAME']
-
+connection = psycopg2.connect(user=username,
+                                  password=password,
+                                  host=host,
+                                  port=port,
+                                  database=db_name)
 
 def done(response):
     return {
@@ -31,11 +35,6 @@ def fail():
     }    
 
 def lambda_handler(event, context):
-    connection = psycopg2.connect(user=username,
-                                  password=password,
-                                  host=host,
-                                  port=port,
-                                  database=db_name)
     cursor = connection.cursor()
     try:
         customer_id = int(event["id"])
@@ -50,7 +49,6 @@ def lambda_handler(event, context):
     customer += '}';
     connection.commit()
     cursor.close()
-    connection.close()
     return done(customer)
     
 
