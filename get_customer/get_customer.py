@@ -39,7 +39,7 @@ def lambda_handler(event, context):
     try:
         customer_id = int(event["id"])
     except:
-        console.log('id is not an int');
+        print('id is not an int');
         return fail()
         
     customer = '{';
