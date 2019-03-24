@@ -31,16 +31,11 @@ def lambda_handler(event, context):
     product_id = event["ProductID"]
     description = event["Description"]
     price = event["Price"]
-    cursor.execute("INSERT INTO public.\"ProductConfiguration\" (\"ProductID\", \"CustomerID\", \"Description\", \"Price\") VALUES(%s, %s, %s, %s)",(str(product_id), str(customer_id),str(description),str(price),))
-    list = []
-    for row in cursor.fetchall():
-        list.append(parse_row(row))
-    result = '['
-    result += ','.join(list)
-    result += ']'
+    cursor.execute("INSERT INTO public.\"ProductConfiguration\" (\"ProductID\", \"CustomerID\", \"Description\", \"Price\") VALUES(%s, %s, %s, %s) RETURNING \"ConfigurationID\"",(str(product_id), str(customer_id),str(description),str(price),))
+    row = cursor.fetchone()[0]
     connection.commit()
     cursor.close()
-    return done(result)
+    return done(json.dumps('{ \"VariantID\":\"'+str(row)+'\"}'))
 
 def parse_row(row):
     result = '{'
