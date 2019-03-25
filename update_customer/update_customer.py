@@ -28,9 +28,10 @@ def lambda_handler(event, context):
     cursor = connection.cursor()
     update_customer(cursor, event["CustomerID"], event["Name"],event["EmailAddress"],event["BillingAddress"], event["Region"] )
     connection.commit()
+    updated_rows = cursor.rowcount
     cursor.close()
     connection.close()
-    return done()
+    return done({"AffectedRows":updated_rows})
 
 def update_customer(cursor,customerID, name, email, billing_address, region):
     cursor.execute("UPDATE public.\"Customer\" SET \"Name\"= %s, \"Contact_Email\"= %s, \"Billing_Address\"= %s, \"Region\"=%s  WHERE \"CustomerID\"= %s ", (name, email, billing_address, region, customerID))
