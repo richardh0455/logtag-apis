@@ -34,4 +34,4 @@ def lambda_handler(event, context):
     return done({"AffectedRows":updated_rows})
 
 def update_shipping_address(cursor, shipping_address_id, shipping_address):
-    cursor.execute("UPDATE public.\"CustomerShippingAddress\" SET \"ShippingAddress\"=%s WHERE \"ShippingAddressID\" =%s", (shipping_address_id, shipping_address))
+    cursor.execute("UPDATE public.\"CustomerShippingAddress\" SET \"ShippingAddress\"=%s WHERE \"ShippingAddressID\" =%s", (shipping_address, shipping_address_id))
