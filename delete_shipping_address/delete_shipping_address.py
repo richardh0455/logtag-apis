@@ -26,12 +26,12 @@ def lambda_handler(event, context):
                                   port=port,
                                   database=db_name)
     cursor = connection.cursor()
-    update_shipping_address(cursor, event["ShippingAddressID"])
+    delete_shipping_address(cursor, event["ShippingAddressID"])
     connection.commit()
     updated_rows = cursor.rowcount
     cursor.close()
     connection.close()
     return done({"AffectedRows":updated_rows})
 
-def update_shipping_address(cursor, shipping_address_id, shipping_address):
-    cursor.execute("DELETE * from public.\"CustomerShippingAddress\" WHERE \"ShippingAddressID\" =%s", (shipping_address_id))
+def delete_shipping_address(cursor, shipping_address_id):
+    cursor.execute("DELETE from public.\"CustomerShippingAddress\" WHERE \"ShippingAddressID\" =%s", (shipping_address_id))
