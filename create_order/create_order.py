@@ -27,15 +27,17 @@ def lambda_handler(event, context):
                                   port=port,
                                   database=db_name)
     cursor = connection.cursor()
-    invoice_id = create_invoice(cursor, int(event["customerID"]))
+    logtagInvoiceNumber = 'IN'+datetime.now().strftime("%d%m%y")
+    invoice_id = create_invoice(cursor, int(event["customerID"]), logtagInvoiceNumber)
+
     create_invoice_items(cursor, invoice_id, event["invoiceLines"])
     connection.commit()
     cursor.close()
     connection.close()
-    return done(json.dumps('{ \"InvoiceID\":\"'+str(invoice_id)+'\"}'))
+    return done(json.dumps('{ \"InvoiceID\":\"'+str(invoice_id)+'\",  \"LogtagInvoiceNumber\":\"'+str(logtagInvoiceNumber)+'\"}'))
 
-def create_invoice(cursor, customerID):
-    logtagInvoiceNumber = 'IN'+datetime.now().strftime("%d%m%y")
+def create_invoice(cursor, customerID, logtagInvoiceNumber):
+
     cursor.execute("INSERT into public.\"Invoice\" (\"CustomerID\", \"LogtagInvoiceNumber\")  VALUES ( %s, %s ) RETURNING \"InvoiceID\"", [customerID, logtagInvoiceNumber])
     row = cursor.fetchone()
     return row[0]
