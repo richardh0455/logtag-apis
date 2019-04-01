@@ -26,7 +26,7 @@ def lambda_handler(event, context):
                                   port=port,
                                   database=db_name)
     cursor = connection.cursor()
-    delete_shipping_address(cursor, event["ShippingAddressID"])
+    delete_shipping_address(cursor, str(int(event["ShippingAddressID"])))
     connection.commit()
     updated_rows = cursor.rowcount
     cursor.close()
