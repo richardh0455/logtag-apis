@@ -34,4 +34,4 @@ def lambda_handler(event, context):
     return done({"AffectedRows":updated_rows})
 
 def delete_shipping_address(cursor, shipping_address_id):
-    cursor.execute("DELETE from public.\"CustomerShippingAddress\" WHERE \"ShippingAddressID\" =%s", (shipping_address_id))
+    cursor.execute("DELETE from public.\"CustomerShippingAddress\" WHERE \"ShippingAddressID\" = {0}".format(shipping_address_id))
