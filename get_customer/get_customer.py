@@ -32,16 +32,23 @@ def fail():
             'Access-Control-Allow-Methods': '*',
             'Access-Control-Allow-Origin': '*'
         }
-    }    
+    }
 
 def lambda_handler(event, context):
-    cursor = connection.cursor()
+    try:
+        cursor = connection.cursor()
+    except:
+        connection = psycopg2.connect(user=username,
+                                          password=password,
+                                          host=host,
+                                          port=port,
+                                          database=db_name)    
     try:
         customer_id = int(event["id"])
     except:
         print('id is not an int');
         return fail()
-        
+
     customer = '{';
     customer += parse_contact_info(cursor, customer_id)
     customer += ','
@@ -50,16 +57,16 @@ def lambda_handler(event, context):
     connection.commit()
     cursor.close()
     return done(customer)
-    
+
 
 def parse_contact_info(cursor, customer_id):
     cursor.execute("SELECT \"Name\", \"Contact_Email\", \"Billing_Address\", \"Region\"  FROM public.\"Customer\" WHERE \"CustomerID\"= %s",(str(customer_id),))
     row = cursor.fetchone()
     result = '\"ContactInfo\": {'
-    result += "\"Name\": \""+str(row[0])+"\"," + '\"Contact_Email\": \"' + str(row[1]) + '\",' + '\"Billing_Address\": \"' + str(row[2]) + '\",' + '\"Region\": \"' + str(row[3]) + '\"' 
+    result += "\"Name\": \""+str(row[0])+"\"," + '\"Contact_Email\": \"' + str(row[1]) + '\",' + '\"Billing_Address\": \"' + str(row[2]) + '\",' + '\"Region\": \"' + str(row[3]) + '\"'
     result += '}'
-    return result     
-    
+    return result
+
 def parse_shipping_addresses(cursor, customer_id):
     cursor.execute("SELECT \"ShippingAddressID\", \"ShippingAddress\" FROM public.\"CustomerShippingAddress\" WHERE \"CustomerID\"= %s", (str(customer_id),))
     result = '\"ShippingAddresses\": ['
@@ -71,5 +78,4 @@ def parse_shipping_addresses(cursor, customer_id):
         list.append(address)
     result += ','.join(list)
     result += ']'
-    return result 
-    
+    return result
