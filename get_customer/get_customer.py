@@ -35,14 +35,9 @@ def fail():
     }
 
 def lambda_handler(event, context):
-    try:
-        cursor = connection.cursor()
-    except:
-        connection = psycopg2.connect(user=username,
-                                          password=password,
-                                          host=host,
-                                          port=port,
-                                          database=db_name)    
+    cursor = get_cursor()
+    if cursor is None:
+        return fail()
     try:
         customer_id = int(event["id"])
     except:
@@ -58,7 +53,19 @@ def lambda_handler(event, context):
     cursor.close()
     return done(customer)
 
-
+def get_cursor():
+    max_retries=5
+    for retry_counter in range(max_retries):
+        try:
+            cursor = connection.cursor()
+            return cursor
+        except:
+            connection = psycopg2.connect(user=username,
+                                              password=password,
+                                              host=host,
+                                              port=port,
+                                              database=db_name)
+    return None
 def parse_contact_info(cursor, customer_id):
     cursor.execute("SELECT \"Name\", \"Contact_Email\", \"Billing_Address\", \"Region\"  FROM public.\"Customer\" WHERE \"CustomerID\"= %s",(str(customer_id),))
     row = cursor.fetchone()
