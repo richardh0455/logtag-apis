@@ -36,7 +36,7 @@ def fail():
 
 def lambda_handler(event, context):
     cursor = connection.cursor()
-    statement = "SELECT \"CustomerID\", \"Name\" FROM public.\"Invoice\""
+    statement = "SELECT \"InvoiceID\", \"CustomerID\" FROM public.\"Invoice\""
     if event["CustomerID"] != null && event["CustomerID"].trim() != "" :
         statement += " WHERE \"CustomerID\"="+event["CustomerID"]
 
@@ -53,7 +53,7 @@ def lambda_handler(event, context):
 
 def parse_row(row):
     result = '{'
-    result += "\"ID\":\""+str(row[0])+"\","
-    result += "\"Name\":\""+row[1]+"\""
+    result += "\"InvoiceID\":\""+str(row[0])+"\","
+    result += "\"CustomerID\":\""+row[1]+"\""
     result += '}'
     return result
