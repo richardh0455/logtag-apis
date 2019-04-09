@@ -39,8 +39,10 @@ def lambda_handler(event, context):
     statement = "SELECT \"InvoiceID\", \"CustomerID\" FROM public.\"Invoice\""
     if event.get("CustomerID", "").strip() :
         statement += " WHERE \"CustomerID\"="+event["CustomerID"]
-
-    cursor.execute(statement)
+    try:
+        cursor.execute(statement)
+    except:
+        return fail()    
     list = []
     for row in cursor.fetchall():
         list.append(parse_row(row))
