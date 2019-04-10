@@ -36,13 +36,13 @@ def fail():
 
 def lambda_handler(event, context):
     cursor = connection.cursor()
-    statement = "SELECT \"InvoiceID\", \"CustomerID\" FROM public.\"Invoice\""
+    statement = "SELECT \"InvoiceID\", \"LogtagInvoiceNumber\" FROM public.\"Invoice\""
     if event.get("CustomerID", "").strip() :
         statement += " WHERE \"CustomerID\"="+event["CustomerID"]
     try:
         cursor.execute(statement)
     except:
-        return fail()    
+        return fail()
     list = []
     for row in cursor.fetchall():
         list.append(parse_row(row))
