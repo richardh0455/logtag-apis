@@ -39,7 +39,7 @@ def lambda_handler(event, context):
     cursor = connection.cursor()
     logtagInvoiceNumber = 'IN'+datetime.now().strftime("%d%m%y")
     try:
-        invoice_id = create_invoice(cursor, int(event["customerID"]), logtagInvoiceNumber, event["purchaseOrderNumber"])
+        invoice_id = create_invoice(cursor, int(event["customerID"]), logtagInvoiceNumber, event.get("purchaseOrderNumber",""))
         create_invoice_items(cursor, invoice_id, event["invoiceLines"])
     except:
         return fail()
