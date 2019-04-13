@@ -71,14 +71,14 @@ def parse_contact_info(cursor, customer_id):
     row = cursor.fetchone()
     result = '\"ContactInfo\": {'
     result += "\"Name\": \""+str(row[0])+"\","
-        + '\"Contact_Email\": \"' + str(row[1]) + '\",'
-        + '\"Billing_Address\": \"' + str(row[2]) + '\",' 
-        + '\"Region\": \"' + str(row[3]) + '\"'
-        + '\"PrimaryContact\": {'
-            + '\"Name\": \"' + str(row[4]) + '\"'
-            + '\"Phone\": \"' + str(row[5]) + '\"'
-            + '\"Fax\": \"' + str(row[6]) + '\"'
-        +"}"
+    + '\"Contact_Email\": \"' + str(row[1]) + '\",'
+    + '\"Billing_Address\": \"' + str(row[2]) + '\",'
+    + '\"Region\": \"' + str(row[3]) + '\"'
+    + '\"PrimaryContact\": {'
+    + '\"Name\": \"' + str(row[4]) + '\"'
+    + '\"Phone\": \"' + str(row[5]) + '\"'
+    + '\"Fax\": \"' + str(row[6]) + '\"'
+    +"}"
     result += '}'
     return result
 

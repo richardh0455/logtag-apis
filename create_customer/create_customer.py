@@ -33,6 +33,6 @@ def lambda_handler(event, context):
     return done(json.dumps('{ \"CustomerID\":\"'+str(customer_id)+'\"}'))
 
 def create_customer(cursor, name, email, billing_address, region, primaryContact):
-    cursor.execute("INSERT into public.\"Customer\" (\"Name\", \"Contact_Email\", \"Billing_Address\", \"Region\",\"Primary_Contact_Name\",\"Primary_Contact_Phone\",\"Primary_Contact_Fax\",  )  VALUES ( %s, %s, %s, %s, %s, %s, %s ) RETURNING \"CustomerID\"", (name, email, billing_address, region, primaryContact["Name"], primaryContact["Phone"], primaryContact["Fax"]))
+    cursor.execute("INSERT into public.\"Customer\" (\"Name\", \"Contact_Email\", \"Billing_Address\", \"Region\",\"Primary_Contact_Name\",\"Primary_Contact_Phone\",\"Primary_Contact_Fax\"  )  VALUES ( %s, %s, %s, %s, %s, %s, %s ) RETURNING \"CustomerID\"", (name, email, billing_address, region, primaryContact["Name"], primaryContact["Phone"], primaryContact["Fax"]))
     row = cursor.fetchone()
     return row[0]
