@@ -67,18 +67,18 @@ def get_cursor():
                                               database=db_name)
     return None
 def parse_contact_info(cursor, customer_id):
-    cursor.execute("SELECT \"Name\", \"Contact_Email\", \"Billing_Address\", \"Region\",Primary_Contact_Name, Primary_Contact_Phone, Primary_Contact_Fax  FROM public.\"Customer\" WHERE \"CustomerID\"= %s",(str(customer_id),))
+    cursor.execute("SELECT \"Name\", \"Contact_Email\", \"Billing_Address\", \"Region\", \"Primary_Contact_Name\", \"Primary_Contact_Phone\", \"Primary_Contact_Fax\"  FROM public.\"Customer\" WHERE \"CustomerID\"= %s",(str(customer_id),))
     row = cursor.fetchone()
     result = '\"ContactInfo\": {'
-    result += "\"Name\": \""+str(row[0])+"\","
-    + '\"Contact_Email\": \"' + str(row[1]) + '\",'
-    + '\"Billing_Address\": \"' + str(row[2]) + '\",'
-    + '\"Region\": \"' + str(row[3]) + '\"'
-    + '\"PrimaryContact\": {'
-    + '\"Name\": \"' + str(row[4]) + '\"'
-    + '\"Phone\": \"' + str(row[5]) + '\"'
-    + '\"Fax\": \"' + str(row[6]) + '\"'
-    +"}"
+    result += '\"Name\": \"'+str(row[0])+ '\",'
+    result += '\"Contact_Email\": \"' + str(row[1]) + '\",'
+    result += '\"Billing_Address\": \"' + str(row[2]) + '\",'
+    result += '\"Region\": \"' + str(row[3]) + '\",'
+    result += '\"PrimaryContact\": {'
+    result += '\"Name\": \"' + str(row[4]) + '\",'
+    result += '\"Phone\": \"' + str(row[5]) + '\",'
+    result += '\"Fax\": \"' + str(row[6]) + '\"'
+    result += "}"
     result += '}'
     return result
 
