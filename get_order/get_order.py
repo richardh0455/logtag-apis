@@ -26,7 +26,7 @@ def fail():
             'Access-Control-Allow-Methods': '*',
             'Access-Control-Allow-Origin': '*'
         }
-    }    
+    }
 
 def lambda_handler(event, context):
     connection = psycopg2.connect(user=username,
@@ -36,24 +36,38 @@ def lambda_handler(event, context):
                                   database=db_name)
     cursor = connection.cursor()
     try:
-        id = int(event["id"])
+        invoice_id = int(event["id"])
     except:
         return fail()
-    cursor.execute("SELECT * FROM public.\"Invoice\" WHERE \"InvoiceID\"= %s",(str(id),))
-	##TODO:: Implement select statement 
-    cursor.execute("SELECT * FROM public.\"Invoice\" WHERE \"InvoiceID\"= %s",(str(id),))
-    list = []
-    for row in cursor:
-        list.append(parse_row(row))
-    result = ','.join(list)
+
+    order = '{';
+    order += parse_order_metadata(cursor, invoice_id)
+    order += ','
+    order += parse_order_lines(cursor, invoice_id)
+    order += '}';
+
     connection.commit()
     cursor.close()
     connection.close()
-    return done(result)
-    
-def parse_row(row):
-    result = '{'
-    for item in row.items():
-        result += str(item[0]) + ':\"' + str(item[1]) + '\",'
+    return done(order)
+
+def parse_order_metadata(cursor, invoice_id):
+    cursor.execute("SELECT CustomerID, ShippedDate,PaymentDate,LogtagInvoiceNumber FROM public.\"Invoice\" WHERE \"InvoiceID\"= %s",(str(id),))
+    row = cursor.fetchone()
+    result = '\"Order\": {'
+    result += "\"CustomerID\": \""+str(row[0])+"\"," + '\"ShippedDate\": \"' + str(row[1]) + '\",' + '\"PaymentDate\": \"' + str(row[2]) + '\",' + '\"LogtagInvoiceNumber\": \"' + str(row[3]) + '\"'
     result += '}'
-    return result    
+    return result;
+
+def parse_order_lines(cursor, invoice_id):
+    cursor.execute("SELECT ProductID, VariationID, Pricing, Quantity FROM public.\"InvoiceLine\" WHERE \"InvoiceID\"= %s",(str(id),))
+    result = '\"OrderLines\": ['
+    list =[]
+    for row in cursor.fetchall():
+        line = '{'
+        line += "\"ProductID\": \""+str(row[0])+"\"," +"\"VariationID\": \""+str(row[1])+"\"," +"\"Pricing\": \""+str(row[2])+"\"," + '\"Quantity\": \"' + str(row[3]) + '\"'
+        line += '}'
+        list.append(line)
+    result += ','.join(list)
+    result += ']'
+    return result
