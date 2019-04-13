@@ -29,7 +29,7 @@ def fail():
             'Access-Control-Allow-Origin': '*'
         }
     }
-    
+
 def lambda_handler(event, context):
     connection = psycopg2.connect(user=username,
                                   password=password,
@@ -39,7 +39,7 @@ def lambda_handler(event, context):
     cursor = connection.cursor()
     logtagInvoiceNumber = 'IN'+datetime.now().strftime("%d%m%y")
     try:
-        invoice_id = create_invoice(cursor, int(event["customerID"]), logtagInvoiceNumber)
+        invoice_id = create_invoice(cursor, int(event["customerID"]), logtagInvoiceNumber, event["purchaseOrderNumber"])
         create_invoice_items(cursor, invoice_id, event["invoiceLines"])
     except:
         return fail()
@@ -48,9 +48,9 @@ def lambda_handler(event, context):
     connection.close()
     return done(json.dumps('{ \"InvoiceID\":\"'+str(invoice_id)+'\",  \"LogtagInvoiceNumber\":\"'+str(logtagInvoiceNumber)+'\"}'))
 
-def create_invoice(cursor, customerID, logtagInvoiceNumber):
+def create_invoice(cursor, customerID, logtagInvoiceNumber, purchaseOrderNumber):
 
-    cursor.execute("INSERT into public.\"Invoice\" (\"CustomerID\", \"LogtagInvoiceNumber\")  VALUES ( %s, %s ) RETURNING \"InvoiceID\"", [customerID, logtagInvoiceNumber])
+    cursor.execute("INSERT into public.\"Invoice\" (\"CustomerID\", \"LogtagInvoiceNumber\", \"PurchaseOrderID\")  VALUES ( %s, %s, %s ) RETURNING \"InvoiceID\"", [customerID, logtagInvoiceNumber,purchaseOrderNumber])
     row = cursor.fetchone()
     return row[0]
 
