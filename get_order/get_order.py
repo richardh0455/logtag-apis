@@ -37,11 +37,15 @@ def lambda_handler(event, context):
     cursor = connection.cursor()
     try:
         invoice_id = int(event["OrderID"])
+        customer_id = int(event["CustomerID"])
     except:
         return fail()
 
     order = '{';
-    order += parse_order_metadata(cursor, invoice_id)
+    metadata = parse_order_metadata(cursor, invoice_id, customer_id)
+    if metadata is None:
+        return fail()
+    order += metadata
     order += ','
     order += parse_order_lines(cursor, invoice_id)
     order += '}';
@@ -51,9 +55,11 @@ def lambda_handler(event, context):
     connection.close()
     return done(order)
 
-def parse_order_metadata(cursor, invoice_id):
-    cursor.execute("SELECT \"CustomerID\", \"ShippedDate\", \"PaymentDate\", \"LogtagInvoiceNumber\" FROM public.\"Invoice\" WHERE \"InvoiceID\"= %s",(str(invoice_id),))
+def parse_order_metadata(cursor, invoice_id, customer_id):
+    cursor.execute("SELECT \"CustomerID\", \"ShippedDate\", \"PaymentDate\", \"LogtagInvoiceNumber\" FROM public.\"Invoice\" WHERE \"InvoiceID\"= %s AND \"CustomerID\"= %s",(str(invoice_id),str(customer_id)))
     row = cursor.fetchone()
+    if row is None:
+        return None
     result = '\"Order\": {'
     result += "\"CustomerID\": \""+str(row[0])+"\"," + '\"ShippedDate\": \"' + str(row[1]) + '\",' + '\"PaymentDate\": \"' + str(row[2]) + '\",' + '\"LogtagInvoiceNumber\": \"' + str(row[3]) + '\"'
     result += '}'
