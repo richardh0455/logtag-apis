@@ -52,7 +52,7 @@ def lambda_handler(event, context):
     return done(order)
 
 def parse_order_metadata(cursor, invoice_id):
-    cursor.execute("SELECT \"CustomerID\", \"ShippedDate\", \"PaymentDate\", \"LogtagInvoiceNumber\" FROM public.\"Invoice\" WHERE \"InvoiceID\"= %s",(str(id),))
+    cursor.execute("SELECT \"CustomerID\", \"ShippedDate\", \"PaymentDate\", \"LogtagInvoiceNumber\" FROM public.\"Invoice\" WHERE \"InvoiceID\"= %s",(str(invoice_id),))
     row = cursor.fetchone()
     result = '\"Order\": {'
     result += "\"CustomerID\": \""+str(row[0])+"\"," + '\"ShippedDate\": \"' + str(row[1]) + '\",' + '\"PaymentDate\": \"' + str(row[2]) + '\",' + '\"LogtagInvoiceNumber\": \"' + str(row[3]) + '\"'
@@ -60,7 +60,7 @@ def parse_order_metadata(cursor, invoice_id):
     return result;
 
 def parse_order_lines(cursor, invoice_id):
-    cursor.execute("SELECT \"ProductID\", \"VariationID\", \"Pricing\", \"Quantity\" FROM public.\"InvoiceLine\" WHERE \"InvoiceID\"= %s",(str(id),))
+    cursor.execute("SELECT \"ProductID\", \"VariationID\", \"Pricing\", \"Quantity\" FROM public.\"InvoiceLine\" WHERE \"InvoiceID\"= %s",(str(invoice_id),))
     result = '\"OrderLines\": ['
     list =[]
     for row in cursor.fetchall():
