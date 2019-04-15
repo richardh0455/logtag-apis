@@ -36,7 +36,7 @@ def lambda_handler(event, context):
                                   database=db_name)
     cursor = connection.cursor()
     try:
-        invoice_id = int(event["id"])
+        invoice_id = int(event["OrderID"])
     except:
         return fail()
 
