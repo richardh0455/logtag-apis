@@ -38,12 +38,12 @@ def lambda_handler(event, context):
     customer_id = event["CustomerID"]
     if not customer_id:
         return fail()
-    delete_customer(cursor, )
+    delete_customer(cursor, customer_id )
     connection.commit()
     deleted_rows = cursor.rowcount
     cursor.close()
     connection.close()
-    return done({"AffectedRows":updated_rows})
+    return done({"AffectedRows":deleted_rows})
 
 def delete_customer(cursor, customer_id):
-    cursor.execute("DELETE from public.\"Customer\" WHERE \"CustomerID\"=%s", (customer_id)
+    cursor.execute("DELETE from public.\"Customer\" WHERE \"CustomerID\"={0}".format(customer_id))
