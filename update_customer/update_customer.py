@@ -34,4 +34,4 @@ def lambda_handler(event, context):
     return done({"AffectedRows":updated_rows})
 
 def update_customer(cursor,customerID, name, email, billing_address, region, primaryContact):
-    cursor.execute("UPDATE public.\"Customer\" SET \"Name\"= %s, \"Contact_Email\"= %s, \"Billing_Address\"= %s, \"Region\"=%s, \"Primary_Contact_Name\"=%s, \"Primary_Contact_Phone\"=%s, \"Primary_Contact_Fax\"=%s  WHERE \"CustomerID\"= %s ", (name, email, billing_address, region, customerID, primaryContact.get("Name", ""),primaryContact.get("Phone", ""),primaryContact.get("Fax", "")))
+    cursor.execute("UPDATE public.\"Customer\" SET \"Name\"= %s, \"Contact_Email\"= %s, \"Billing_Address\"= %s, \"Region\"=%s, \"Primary_Contact_Name\"=%s, \"Primary_Contact_Phone\"=%s, \"Primary_Contact_Fax\"=%s  WHERE \"CustomerID\"= %s ", (name, email, billing_address, region, primaryContact.get("Name", ""), primaryContact.get("Phone", ""), primaryContact.get("Fax", ""), customerID))
