@@ -1,6 +1,7 @@
 import psycopg2
 import json
 import os
+from decimal import Decimal
 
 host  = os.environ['RDS_HOST']
 port = os.environ['PORT']
@@ -37,7 +38,7 @@ def lambda_handler(event, context):
 
     try:
         cursor = connection.cursor()
-        product_id = create_product(cursor, event["Name"],event["Description"],int(event["CostPrice"]) )
+        product_id = create_product(cursor, event["Name"],event["Description"],Decimal(event["CostPrice"]) )
         connection.commit()
         cursor.close()
         connection.close()
