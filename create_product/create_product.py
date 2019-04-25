@@ -18,6 +18,15 @@ def done(response):
             'Access-Control-Allow-Origin': '*'
         }
     }
+def fail():
+    return {
+        'statusCode': '406',
+        'headers': {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Methods': '*',
+            'Access-Control-Allow-Origin': '*'
+        }
+    }
 
 def lambda_handler(event, context):
     connection = psycopg2.connect(user=username,
@@ -25,16 +34,19 @@ def lambda_handler(event, context):
                                   host=host,
                                   port=port,
                                   database=db_name)
-    cursor = connection.cursor()                               
-    product_id = create_product(cursor, event["Name"],event["Description"],int(event["CostPrice"]) )
-    connection.commit()
-    cursor.close()
-    connection.close()
-    return done(json.dumps('{ \"ProductID\":\"'+str(product_id)+'\"}'))
-    
+
+    try:
+        cursor = connection.cursor()
+        product_id = create_product(cursor, event["Name"],event["Description"],int(event["CostPrice"]) )
+        connection.commit()
+        cursor.close()
+        connection.close()
+        return done(json.dumps('{ \"ProductID\":\"'+str(product_id)+'\"}'))
+    except:
+        return fail()
+
+
 def create_product(cursor, name, description, cost_price):
     cursor.execute("INSERT into public.\"Product\" (\"Name\", \"Description\", \"CostPrice\" )  VALUES ( %s, %s, %s ) RETURNING \"ProductID\"",(name, description, cost_price))
     row = cursor.fetchone()
     return row[0]
-
-    
