@@ -37,7 +37,7 @@ def lambda_handler(event, context):
     updated_rows = 0
     try:
         cursor = connection.cursor()
-        update_variation(cursor, event["Description"], event["CustomerID"],event["ProductID"],Decimal(event["CostPrice"]),event["ConfigurationID"] )
+        update_variation(cursor, event["Description"], event["CustomerID"],event["ProductID"],Decimal(event["Price"]),event["ConfigurationID"] )
         connection.commit()
         updated_rows = cursor.rowcount
         cursor.close()
