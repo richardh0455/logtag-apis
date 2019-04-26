@@ -43,6 +43,6 @@ def parse_row(row):
     result += "\"ID\":\""+str(row[0])+"\","
     result += "\"Name\":\""+row[1]+"\","
     result += "\"Description\":\""+row[2]+"\","
-    result += "\"Cost_Price\":\""+str(row[3])+"\","
+    result += "\"Cost_Price\":\""+str(row[3])+"\""
     result += '}'
     return result
