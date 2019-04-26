@@ -25,22 +25,24 @@ def done(response):
     }
 
 def lambda_handler(event, context):
-    
+
     cursor = connection.cursor()
-    cursor.execute("SELECT \"ProductID\", \"Name\" FROM public.\"Product\"")
+    cursor.execute("SELECT \"ProductID\", \"Name\", \"Description\",\"CostPrice\" FROM public.\"Product\"")
     list = []
     for row in cursor.fetchall():
         list.append(parse_row(row))
-    result = '['    
+    result = '['
     result += ','.join(list)
     result += ']'
     connection.commit()
     cursor.close()
     return done(result)
-    
+
 def parse_row(row):
     result = '{'
     result += "\"ID\":\""+str(row[0])+"\","
-    result += "\"Name\":\""+row[1]+"\""
+    result += "\"Name\":\""+row[1]+"\","
+    result += "\"Description\":\""+row[2]+"\","
+    result += "\"Cost_Price\":\""+row[3]+"\","
     result += '}'
-    return result  
+    return result
