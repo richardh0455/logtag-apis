@@ -39,7 +39,7 @@ def lambda_handler(event, context):
     cursor = connection.cursor()
     logtagInvoiceNumber = 'IN'+datetime.now().strftime("%d%m%y")
     try:
-        invoice_id = create_invoice(cursor, int(event["customerID"]), logtagInvoiceNumber, event.get("purchaseOrderNumber",""))
+        invoice_id = create_invoice(cursor, int(event["customerID"]), logtagInvoiceNumber, event.get("purchaseOrderNumber",""), event.get("currency",""))
         create_invoice_items(cursor, invoice_id, event["invoiceLines"])
     except:
         return fail()
@@ -48,9 +48,9 @@ def lambda_handler(event, context):
     connection.close()
     return done(json.dumps('{ \"InvoiceID\":\"'+str(invoice_id)+'\",  \"LogtagInvoiceNumber\":\"'+str(logtagInvoiceNumber)+'\"}'))
 
-def create_invoice(cursor, customerID, logtagInvoiceNumber, purchaseOrderNumber):
+def create_invoice(cursor, customerID, logtagInvoiceNumber, purchaseOrderNumber, currency):
 
-    cursor.execute("INSERT into public.\"Invoice\" (\"CustomerID\", \"LogtagInvoiceNumber\", \"PurchaseOrderID\")  VALUES ( %s, %s, %s ) RETURNING \"InvoiceID\"", [customerID, logtagInvoiceNumber,purchaseOrderNumber])
+    cursor.execute("INSERT into public.\"Invoice\" (\"CustomerID\", \"LogtagInvoiceNumber\", \"PurchaseOrderID\", \"Currency\")  VALUES ( %s, %s, %s, %s ) RETURNING \"InvoiceID\"", [customerID, logtagInvoiceNumber, purchaseOrderNumber, currency])
     row = cursor.fetchone()
     return row[0]
 
