@@ -38,8 +38,8 @@ def lambda_handler(event, context):
                                       database=db_name)
     try:
         cursor = connection.cursor()
-        ##cursor.execute("SELECT \"CurrencyID\", \"ShortName\" FROM public.\"Currency\"")
-        cursor.execute("SELECT * FROM (VALUES (0, 'USD'), (1, 'HKD'), (2, 'NZD')) t1 (c1, c2) ")
+        cursor.execute("SELECT \"CurrencyID\", \"ShortName\" FROM public.\"Currency\"")
+        ##cursor.execute("SELECT * FROM (VALUES (0, 'USD'), (1, 'HKD'), (2, 'NZD')) t1 (c1, c2) ")
         list = []
         for row in cursor.fetchall():
             list.append(parse_row(row))
@@ -50,7 +50,7 @@ def lambda_handler(event, context):
         cursor.close()
         return done(result)
     except:
-        return fail()     
+        return fail()
 
 def parse_row(row):
     result = '{'
