@@ -37,7 +37,7 @@ def lambda_handler(event, context):
     updated_rows = 0
     try:
         cursor = connection.cursor()
-        update_order(cursor, event["OrderID"], event.get("ShippingDate",""),event.get("purchaseDate",""))
+        update_order(cursor, event["OrderID"], event.get("ShippingDate",""),event.get("PurchaseDate",""))
         connection.commit()
         updated_rows = cursor.rowcount
         cursor.close()
