@@ -55,5 +55,5 @@ def generate_invoice_number(cursor):
     cursor.execute("SELECT COUNT(*) FROM public.\"Invoice\" WHERE \"Created_At\"> now() - interval '1 day' ")
     row = cursor.fetchone()
     if row is None:
-        return 0
-    return row[0];
+        return 1
+    return row[0]+1;
