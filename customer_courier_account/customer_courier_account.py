@@ -37,9 +37,9 @@ def lambda_handler(event, context):
     updated_rows = 0
     try:
         cursor = connection.cursor()
-        if event.get("Method","") ==="GET":
+        if event.get("Method","") =="GET":
             value = retrieve_courier_accounts(cursor, event["CustomerID"])
-        if event.get("Method","")  ==="POST":
+        if event.get("Method","")  =="POST":
             value = create_or_update_courier_account(cursor, event.get("AccountID", ""), event.get("CustomerID",""), event.get("CourierAccount",""))
         connection.commit()
         cursor.close()
@@ -69,9 +69,9 @@ def parse_courier_account(row):
 
 def create_or_update_courier_account(cursor, account_id, customer_id, courier_account):
     if not account_id:
-        create_courier_account(cursor, customer_id, courier_account)
+        return create_courier_account(cursor, customer_id, courier_account)
     else:
-        update_courier_account(cursor, account_id, customer_id, courier_account )
+        return update_courier_account(cursor, account_id, customer_id, courier_account )
 
 def create_courier_account(cursor, customer_id, courier_account):
     cursor.execute("INSERT into public.\"CustomerCourierAccount\" (\"CustomerID\", \"CourierAccount\")  VALUES ( %s, %s) RETURNING \"ID\"", (customer_id, courier_account))
