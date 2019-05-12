@@ -48,6 +48,8 @@ def lambda_handler(event, context):
     customer += parse_contact_info(cursor, customer_id)
     customer += ','
     customer += parse_shipping_addresses(cursor, customer_id)
+    customer += ','
+    customer += parse_courier_accounts(cursor, customer_id)
     customer += '}';
     connection.commit()
     cursor.close()
@@ -93,4 +95,21 @@ def parse_shipping_addresses(cursor, customer_id):
         list.append(address)
     result += ','.join(list)
     result += ']'
+    return result
+
+def parse_courier_accounts(cursor, customer_id):
+    cursor.execute("SELECT \"ID\", \"CourierAccount\" FROM public.\"CustomerCourierAccount\" WHERE \"CustomerID\"=%s",(customer_id))
+    list = []
+    for row in cursor.fetchall():
+        list.append(parse_courier_account(row))
+    result = '\"CourierAccounts\": ['
+    result += ','.join(list)
+    result += ']'
+    return result
+
+def parse_courier_account(row):
+    result = '{'
+    result += "\"ID\":\""+str(row[0])+"\","
+    result += "\"CourierAccount\":\""+row[1]+"\""
+    result += '}'
     return result
