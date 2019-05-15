@@ -55,7 +55,7 @@ def lambda_handler(event, context):
 
 
 def get_courier_accounts(cursor, customer_id):
-    cursor.execute("DELETE FROM public.\"CustomerCourierAccount\" WHERE \"ID\"= {0}".format(account_id))
+    cursor.execute("SELECT \"ID\", \"CourierAccount\"  FROM public.\"CustomerCourierAccount\" WHERE \"ID\"= {0}".format(account_id))
     list = []
     for row in cursor.fetchall():
         list.append(parse_courier_account(row))
