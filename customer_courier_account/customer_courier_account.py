@@ -38,9 +38,13 @@ def lambda_handler(event, context):
     try:
         cursor = connection.cursor()
         if event.get("Method","") =="GET":
-            value = retrieve_courier_accounts(cursor, event["CustomerID"])
+            value = get_courier_accounts(cursor, event["CustomerID"])
         if event.get("Method","")  =="POST":
-            value = create_or_update_courier_account(cursor, event.get("AccountID", ""), event.get("CustomerID",""), event.get("CourierAccount",""))
+            value = create_courier_account(cursor,  event.get("CustomerID",""), event.get("CourierAccount",""))
+        if event.get("Method","")  =="PUT":
+            value = update_courier_account(cursor, event.get("AccountID", ""), event.get("CustomerID",""), event.get("CourierAccount",""))
+        if event.get("Method","")  =="DELETE":
+            value = delete_courier_account(cursor,  event.get("AccountID", ""))
         connection.commit()
         cursor.close()
         connection.close()
@@ -50,7 +54,7 @@ def lambda_handler(event, context):
 
 
 
-def retrieve_courier_accounts(cursor, customer_id):
+def get_courier_accounts(cursor, customer_id):
     cursor.execute("SELECT \"ID\", \"CourierAccount\" FROM public.\"CustomerCourierAccount\" WHERE \"CustomerID\"=%s",(customer_id))
     list = []
     for row in cursor.fetchall():
@@ -67,11 +71,6 @@ def parse_courier_account(row):
     result += '}'
     return result
 
-def create_or_update_courier_account(cursor, account_id, customer_id, courier_account):
-    if not account_id:
-        return create_courier_account(cursor, customer_id, courier_account)
-    else:
-        return update_courier_account(cursor, account_id, customer_id, courier_account )
 
 def create_courier_account(cursor, customer_id, courier_account):
     cursor.execute("INSERT into public.\"CustomerCourierAccount\" (\"CustomerID\", \"CourierAccount\")  VALUES ( %s, %s) RETURNING \"ID\"", (customer_id, courier_account))
@@ -80,5 +79,10 @@ def create_courier_account(cursor, customer_id, courier_account):
 
 def update_courier_account(cursor, account_id, customer_id, courier_account):
     cursor.execute("UPDATE public.\"CustomerCourierAccount\" SET \"CustomerID\"= %s, \"CourierAccount\"= %s WHERE \"ID\"= %s ", (customer_id, courier_account, account_id))
+    updated_rows = cursor.rowcount
+    return {"AffectedRows":updated_rows}
+
+def delete_courier_account(cursor, account_id):
+    cursor.execute("DELETE FROM public.\"CustomerCourierAccount\" WHERE \"ID\"= %s ", (account_id))
     updated_rows = cursor.rowcount
     return {"AffectedRows":updated_rows}
