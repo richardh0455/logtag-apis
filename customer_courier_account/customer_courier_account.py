@@ -55,7 +55,7 @@ def lambda_handler(event, context):
 
 
 def get_courier_accounts(cursor, customer_id):
-    cursor.execute("SELECT \"ID\", \"CourierAccount\"  FROM public.\"CustomerCourierAccount\" WHERE \"ID\"= {0}".format(account_id))
+    cursor.execute("SELECT \"ID\", \"CourierAccount\"  FROM public.\"CustomerCourierAccount\" WHERE \"ID\"= %s", (account_id,))
     list = []
     for row in cursor.fetchall():
         list.append(parse_courier_account(row))
@@ -73,16 +73,16 @@ def parse_courier_account(row):
 
 
 def create_courier_account(cursor, customer_id, courier_account):
-    cursor.execute("INSERT into public.\"CustomerCourierAccount\" (\"CustomerID\", \"CourierAccount\")  VALUES ( %s, %s) RETURNING \"ID\"", (customer_id, courier_account))
+    cursor.execute("INSERT into public.\"CustomerCourierAccount\" (\"CustomerID\", \"CourierAccount\")  VALUES ( %s, %s) RETURNING \"ID\"", (customer_id, courier_account,))
     row = cursor.fetchone()
     return {"AccountID":row[0]}
 
 def update_courier_account(cursor, account_id, customer_id, courier_account):
-    cursor.execute("UPDATE public.\"CustomerCourierAccount\" SET \"CustomerID\"= %s, \"CourierAccount\"= %s WHERE \"ID\"= %s ", (customer_id, courier_account, account_id))
+    cursor.execute("UPDATE public.\"CustomerCourierAccount\" SET \"CustomerID\"= %s, \"CourierAccount\"= %s WHERE \"ID\"= %s ", (customer_id, courier_account, account_id,))
     updated_rows = cursor.rowcount
     return {"AffectedRows":updated_rows}
 
 def delete_courier_account(cursor, account_id):
-    cursor.execute("DELETE FROM public.\"CustomerCourierAccount\" WHERE \"ID\"= %s ", (account_id))
+    cursor.execute("DELETE FROM public.\"CustomerCourierAccount\" WHERE \"ID\"= %s ", (account_id,))
     updated_rows = cursor.rowcount
     return {"AffectedRows":updated_rows}
