@@ -49,7 +49,7 @@ def create_invoice_items(cursor, invoiceID, invoiceLines):
         variationID = line["VariationID"]
         if(line["VariationID"] == "NULL"):
             variationID = "0"
-        cursor.execute("INSERT into public.\"InvoiceLine\" (\"InvoiceID\", \"Quantity\", \"ProductID\", \"Pricing\", \"VariationID\")  VALUES ( %s, %s, %s, %s, %s )", (invoiceID, int(line["Quantity"]), int(line["ProductID"]), int(line["Price"]),int(variationID)))
+        cursor.execute("INSERT into public.\"InvoiceLine\" (\"InvoiceID\", \"Quantity\", \"ProductID\", \"Pricing\", \"VariationID\")  VALUES ( %s, %s, %s, %s, %s )", (invoiceID, int(line["Quantity"]), int(line["ProductID"]), Decimal(line["Price"]),int(variationID)))
 
 def generate_invoice_number(cursor):
     cursor.execute("SELECT COUNT(*) FROM public.\"Invoice\" WHERE \"Created_At\"> now() - interval '1 day' ")
