@@ -2,6 +2,7 @@ import psycopg2
 import json
 import os
 from datetime import datetime
+from decimal import Decimal
 
 host  = os.environ['RDS_HOST']
 port = os.environ['PORT']
