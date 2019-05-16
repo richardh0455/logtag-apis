@@ -117,7 +117,7 @@ def parse_courier_account(row):
     return result
 
 def parse_hs_codes(cursor, customer_id):
-    cursor.execute("SELECT \"ID\", \"CourierAccount\" FROM public.\"CustomerCourierAccount\" WHERE \"CustomerID\"= %s", (str(customer_id),))
+    cursor.execute("SELECT \"ID\", \"HSCode\" FROM public.\"CustomerHSCode\" WHERE \"CustomerID\"= %s", (str(customer_id),))
     list = []
     for row in cursor.fetchall():
         list.append(parse_hs_code(row))
