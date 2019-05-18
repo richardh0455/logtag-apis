@@ -56,7 +56,7 @@ def lambda_handler(event, context):
 def parse_row(row):
     result = '{'
     result += "\"InvoiceID\":\""+str(row[0])+"\","
-    result += "\"CustomerID\":\""+str(row[1])+"\","
+    result += "\"LogtagInvoiceNumber\":\""+str(row[1])+"\","
     result += "\"Created_At\":\""+str(row[2])+"\""
     result += '}'
     return result
