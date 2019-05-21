@@ -2,12 +2,6 @@ import botocore.session
 import json
 import os
 
-host  = os.environ['RDS_HOST']
-port = os.environ['PORT']
-username = os.environ['USERNAME']
-password = os.environ['PASSWORD']
-db_name = os.environ['DB_NAME']
-
 def done(response):
     return {
         'statusCode': '200',
