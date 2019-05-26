@@ -54,7 +54,7 @@ const sendRes = (event, context, callback) => {
     var accountId = context.invokedFunctionArn.match(/\d{3,}/)[0];
     var dashboardId = decodeURIComponent(event.dashboardId || event.queryStringParameters.dashboardId);
     var username = decodeURIComponent(event.username || event.queryStringParameters.username);
-    //var password = decodeURIComponent(event.password || event.queryStringParameters.password);
+    var sessionName = decodeURIComponent(event.sessionName || event.queryStringParameters.sessionName);
     var idToken = decodeURIComponent(event.Authorization || event.headers.Authorization);
 
     if (!accountId) {
@@ -100,6 +100,8 @@ const sendRes = (event, context, callback) => {
         Username: username,
         Pool: userPool
     };
+
+    //var sessionName =  result.getIdToken().payload.sub;
     var cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
 
     var cognitoIdentity = new AWS.CognitoIdentity();
