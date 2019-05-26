@@ -52,10 +52,10 @@ const sendRes = (event, context, callback) => {
     });
     let body = JSON.parse(event.body);
     var accountId = context.invokedFunctionArn.match(/\d{3,}/)[0];
-    var dashboardId = decodeURIComponent(body.dashboardId || event.queryStringParameters.dashboardId);
-    var username = decodeURIComponent(body.username || event.queryStringParameters.username);
-    var sessionName = decodeURIComponent(body.sessionName || event.queryStringParameters.sessionName);
-    var idToken = decodeURIComponent(body.Authorization || event.headers.Authorization);
+    var dashboardId = body.dashboardId ;
+    var username = body.username;
+    var sessionName = body.sessionName;
+    var idToken = body.Authorization;
 
     if (!accountId) {
         var error = new Error("accountId is unavailable");
