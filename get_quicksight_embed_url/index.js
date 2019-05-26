@@ -50,12 +50,12 @@ const sendRes = (event, context, callback) => {
     AWS.config.update({
         region: process.env.AWS_REGION,
     });
-    let body = JSON.parse(event.body);
+    //let body = event.body;
     var accountId = context.invokedFunctionArn.match(/\d{3,}/)[0];
-    var dashboardId = body.dashboardId ;
-    var username = body.username;
-    var sessionName = body.sessionName;
-    var idToken = body.Authorization;
+    var dashboardId = event.dashboardId ;
+    var username = event.username;
+    var sessionName = event.sessionName;
+    var idToken = event.Authorization;
 
     if (!accountId) {
         var error = new Error("accountId is unavailable");
