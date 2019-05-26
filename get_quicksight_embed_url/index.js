@@ -50,8 +50,8 @@ const sendRes = (event, context, callback) => {
     AWS.config.update({
         region: process.env.AWS_REGION,
     });
-    var error = new Error(event);
-    callback(error);
+
+    callback(null, JSON.stringify(event));
     var accountId = context.invokedFunctionArn.match(/\d{3,}/)[0];
     var dashboardId = decodeURIComponent(event.dashboardId || event.queryStringParameters.dashboardId);
     var username = decodeURIComponent(event.username || event.queryStringParameters.username);
