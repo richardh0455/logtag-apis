@@ -53,9 +53,9 @@ const sendRes = (event, context, callback) => {
 
     var accountId = context.invokedFunctionArn.match(/\d{3,}/)[0];
     var dashboardId = decodeURIComponent(event.dashboardId || event.queryStringParameters.dashboardId);
-    //var username = decodeURIComponent(event.username || event.queryStringParameters.username);
+    var username = decodeURIComponent(event.username || event.queryStringParameters.username);
     //var password = decodeURIComponent(event.password || event.queryStringParameters.password);
-    var idToken = decodeURIComponent(event.idToken);
+    var idToken = decodeURIComponent(event.Authorization || event.headers.Authorization);
 
     if (!accountId) {
         var error = new Error("accountId is unavailable");
@@ -72,10 +72,10 @@ const sendRes = (event, context, callback) => {
         callback(error);
     }
 
-    /*if (!username) {
+    if (!username) {
         var error = new Error("username is unavailable");
         callback(error);
-    }*/
+    }
 
     /*if (!password) {
         var error = new Error("password is unavailable");
@@ -97,7 +97,7 @@ const sendRes = (event, context, callback) => {
     var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
 
     var userData = {
-        Username: idToken.payload.email,
+        Username: username,
         Pool: userPool
     };
     var cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
@@ -108,7 +108,7 @@ const sendRes = (event, context, callback) => {
         IdentityPoolId: 'ap-southeast-2:687f1ba1-1242-4f22-8adf-da49297c8005', // your identity pool id here
         Logins: {
             // your logins here
-            'cognito-idp.ap-southeast-2.amazonaws.com/ap-southeast-2_3e18SkGuR': idToken.jwtToken
+            'cognito-idp.ap-southeast-2.amazonaws.com/ap-southeast-2_3e18SkGuR': idToken
         }
     };
 
@@ -117,7 +117,7 @@ const sendRes = (event, context, callback) => {
         else {
             data.Logins = {
                 // your logins here
-                'cognito-idp.ap-southeast-2.amazonaws.com/ap-southeast-2_3e18SkGuR': idToken.jwtToken
+                'cognito-idp.ap-southeast-2.amazonaws.com/ap-southeast-2_3e18SkGuR': idToken
             };
 
             cognitoIdentity.getOpenIdToken(data, function(err, openIdToken) {
@@ -180,17 +180,6 @@ const sendRes = (event, context, callback) => {
                     });
                 }
             });
-        }
-    });
-    cognitoUser.authenticateUser(authenticationDetails, {
-        onSuccess: function(result) {
-            var sessionName =  result.getIdToken().payload.sub;
-
-        },
-
-        onFailure: function(err) {
-            console.log(err, err.stack);
-            callback(err);
         }
     });
 }
