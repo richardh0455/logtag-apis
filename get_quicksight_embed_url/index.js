@@ -51,12 +51,11 @@ const sendRes = (event, context, callback) => {
         region: process.env.AWS_REGION,
     });
 
-    callback(null, JSON.stringify(event));
     var accountId = context.invokedFunctionArn.match(/\d{3,}/)[0];
-    var dashboardId = decodeURIComponent(event.dashboardId || event.queryStringParameters.dashboardId);
-    var username = decodeURIComponent(event.username || event.queryStringParameters.username);
-    var sessionName = decodeURIComponent(event.sessionName || event.queryStringParameters.sessionName);
-    var idToken = decodeURIComponent(event.Authorization || event.headers.Authorization);
+    var dashboardId = decodeURIComponent(event.body.dashboardId || event.queryStringParameters.dashboardId);
+    var username = decodeURIComponent(event.body.username || event.queryStringParameters.username);
+    var sessionName = decodeURIComponent(event.body.sessionName || event.queryStringParameters.sessionName);
+    var idToken = decodeURIComponent(event.body.Authorization || event.headers.Authorization);
 
     if (!accountId) {
         var error = new Error("accountId is unavailable");
