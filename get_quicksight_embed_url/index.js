@@ -52,7 +52,7 @@ const sendRes = (event, context, callback) => {
     });
     //let body = event.body;
     var accountId = context.invokedFunctionArn.match(/\d{3,}/)[0];
-    var dashboardId = event.dashboardId ;
+    var dashboardId = process.env.dashboardId ;
     var username = event.username;
     var sessionName = event.sessionName;
     var idToken = event.Authorization;
