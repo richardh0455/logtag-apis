@@ -56,7 +56,7 @@ const sendRes = (event, context, callback) => {
     var cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
 
     var cognitoIdentity = new AWS.CognitoIdentity();
-    var stsClient = new AWS.STS();
+
     var params = {
         IdentityPoolId: 'ap-southeast-2:687f1ba1-1242-4f22-8adf-da49297c8005', // your identity pool id here
         Logins: {
@@ -66,11 +66,11 @@ const sendRes = (event, context, callback) => {
     };
 
     cognitoIdentity.getId(params, function(err, data) {
-        authenticateAndGenerateURL(err, data, accountId, dashboardId, callback, roleArn, sessionName, idToken )
+        authenticateAndGenerateURL(err, data, accountId, dashboardId, callback, roleArn, sessionName, idToken, cognitoIdentity )
     });
 }
 
-const authenticateAndGenerateURL = (err, data, accountId, dashboardId, callback, roleArn, sessionName, idToken) => {
+const authenticateAndGenerateURL = (err, data, accountId, dashboardId, callback, roleArn, sessionName, idToken, cognitoIdentity) => {
   if (err) console.log(err, err.stack);
   else {
       data.Logins = {
@@ -95,6 +95,7 @@ const getTokenAndGenerateURL = (err, openIdToken, accountId, dashboardId, callba
           WebIdentityToken: openIdToken.Token,
           RoleArn: roleArn
       }
+      var stsClient = new AWS.STS();
       stsClient.assumeRoleWithWebIdentity(stsParams, function(err, data) {
           assumeRoleAndGenerateURL(err, data, accountId, dashboardId, callback, roleArn, sessionName);
       });
