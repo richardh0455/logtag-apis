@@ -15,7 +15,6 @@ const sendRes = (event, context, callback) => {
     });
     var accountId = context.invokedFunctionArn.match(/\d{3,}/)[0];
     var dashboardId = process.env.dashboardId ;
-    //var username = event.username;
     var sessionName = event.sessionName;
     var idToken = event.Authorization;
 
@@ -34,26 +33,8 @@ const sendRes = (event, context, callback) => {
         callback(error);
     }
 
-    /*if (!username) {
-        var error = new Error("username is unavailable");
-        callback(error);
-    }*/
-
-
     var roleArn = 'arn:aws:iam::276219036989:role/Cognito_logtag_identity_poolAuth_Role'; // your cognito authenticated role arn here
 
-    /*var poolData = {
-        UserPoolId: 'ap-southeast-2_3e18SkGuR', // your user pool id here
-        ClientId: '5k4a2nd0euhv8bfaugepk8b4kf' // your app client id here
-    };*/
-    //var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
-
-    /*var userData = {
-        Username: username,
-        Pool: userPool
-    };*/
-
-    //var cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
 
     var cognitoIdentity = new AWS.CognitoIdentity();
 
