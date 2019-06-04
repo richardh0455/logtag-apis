@@ -38,7 +38,7 @@ def lambda_handler(event, context):
     try:
         cursor = connection.cursor()
         if event.get("Method","") =="GET":
-            value = get_price_lists(cursor, event.get("CustomerID",""), event.get("ProductID",""))
+            value = get_price_lists(cursor, event.params.get("CustomerID",""), event.query.get("ProductID",""))
         if event.get("Method","")  =="POST":
             value = create_price_item(cursor,  event.get("CustomerID",""), event.get("ProductID",""), event.get("Price",""), event.get("Lower_Range",""), event.get("Upper_Range",""))
         if event.get("Method","")  =="PUT":
