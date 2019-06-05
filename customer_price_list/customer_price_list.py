@@ -42,9 +42,9 @@ def lambda_handler(event, context):
         if event.get("Method","")  =="POST":
             value = create_price_item(cursor,  event["params"]["CustomerID"], event["query"]["ProductID"], event.get("Price",""), event.get("Lower_Range",""), event.get("Upper_Range",""))
         if event.get("Method","")  =="PUT":
-            value = update_price_item(cursor, event.get("ID", ""), event["params"]["CustomerID"], event["query"]["ProductID"], event.get("Price",""), event.get("Lower_Range",""), event.get("Upper_Range",""))
+            value = update_price_item(cursor, event["query"]["ID"], event["params"]["CustomerID"], event["query"]["ProductID"], event["body"]["Price"], event["body"]["Lower_Range"], event["body"]["Upper_Range"])
         if event.get("Method","")  =="DELETE":
-            value = delete_price_item(cursor,  event.get("ID", ""))
+            value = delete_price_item(cursor,  event["query"]["ID"])
         connection.commit()
         cursor.close()
         connection.close()
