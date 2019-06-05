@@ -38,11 +38,11 @@ def lambda_handler(event, context):
     try:
         cursor = connection.cursor()
         if event.get("Method","") =="GET":
-            value = get_price_lists(cursor, event["params"]["CustomerID"], event["query"]["ProductID"])
+            value = get_price_lists(cursor, event["params"]["customer-id"], event["query"]["product-id"])
         if event.get("Method","")  =="POST":
-            value = create_price_item(cursor,  event["params"]["CustomerID"], event["query"]["ProductID"], event["body"]["Price"], event["body"]["Lower_Range"], event["body"]["Upper_Range"])
+            value = create_price_item(cursor,  event["params"]["customer-id"], event["query"]["product-id"], event["body"]["Price"], event["body"]["Lower_Range"], event["body"]["Upper_Range"])
         if event.get("Method","")  =="PUT":
-            value = update_price_item(cursor, event["query"]["ID"], event["params"]["CustomerID"], event["query"]["ProductID"], event["body"]["Price"], event["body"]["Lower_Range"], event["body"]["Upper_Range"])
+            value = update_price_item(cursor, event["query"]["ID"], event["params"]["customer-id"], event["query"]["product-id"], event["body"]["Price"], event["body"]["Lower_Range"], event["body"]["Upper_Range"])
         if event.get("Method","")  =="DELETE":
             value = delete_price_item(cursor,  event["query"]["ID"])
         connection.commit()
