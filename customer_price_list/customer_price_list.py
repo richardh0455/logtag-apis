@@ -68,9 +68,9 @@ def get_price_lists(cursor, customer_id, product_id):
 def parse_price_item(row):
     result = '{'
     result += "\"ID\":\""+str(row[0])+"\","
-    result += "\"Price\":\""+row[1]+"\","
-    result += "\"Lower_Range\":\""+row[2]+"\","
-    result += "\"Upper_Range\":\""+row[3]+"\","
+    result += "\"Price\":\""+str(row[1])+"\","
+    result += "\"Lower_Range\":\""+str(row[2])+"\","
+    result += "\"Upper_Range\":\""+str(row[3])+"\","
     result += '}'
     return result
 
