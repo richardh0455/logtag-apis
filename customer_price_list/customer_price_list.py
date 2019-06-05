@@ -38,24 +38,25 @@ def lambda_handler(event, context):
     try:
         cursor = connection.cursor()
         if event.get("Method","") =="GET":
-            value = get_price_lists(cursor, event.params.get("CustomerID",""), event.query.get("ProductID",""))
+            value = get_price_lists(cursor, event["params"]["CustomerID"], event["query"]["ProductID"])
         if event.get("Method","")  =="POST":
-            value = create_price_item(cursor,  event.params.get("CustomerID",""), event.query.get("ProductID",""), event.body.get("Price",""), event.body.get("Lower_Range",""), event.body.get("Upper_Range",""))
+            value = create_price_item(cursor,  event["params"]["CustomerID"], event["query"]["ProductID"], event.get("Price",""), event.get("Lower_Range",""), event.get("Upper_Range",""))
         if event.get("Method","")  =="PUT":
-            value = update_price_item(cursor, event.body.get("ID", ""), event.params.get("CustomerID",""), event.query.get("ProductID",""), event.body.get("Price",""), event.body.get("Lower_Range",""), event.body.get("Upper_Range",""))
+            value = update_price_item(cursor, event.get("ID", ""), event["params"]["CustomerID"], event["query"]["ProductID"], event.get("Price",""), event.get("Lower_Range",""), event.get("Upper_Range",""))
         if event.get("Method","")  =="DELETE":
-            value = delete_price_item(cursor,  event.body.get("ID", ""))
+            value = delete_price_item(cursor,  event.get("ID", ""))
         connection.commit()
         cursor.close()
         connection.close()
-    except:
+    except Exception as e:
+        print(e)
         return fail()
     return done(value)
 
 
 
 def get_price_lists(cursor, customer_id, product_id):
-    cursor.execute("SELECT \"ID\", \"Price\", \"Lower_Range\", \"Upper_Range\"  FROM public.\"CustomerPriceList\" WHERE \"CustomerID\"= %s AND ProductID = %s", (customer_id, product_id,))
+    cursor.execute("SELECT \"ID\", \"Price\", \"Lower_Range\", \"Upper_Range\"  FROM public.\"CustomerPriceList\" WHERE \"CustomerID\"= %s AND \"ProductID\" = %s", (customer_id, product_id,))
     list = []
     for row in cursor.fetchall():
         list.append(parse_price_item(row))
