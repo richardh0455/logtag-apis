@@ -38,7 +38,7 @@ def lambda_handler(event, context):
     try:
         cursor = connection.cursor()
         if event.get("Method","") =="GET":
-            value = get_order(cursor, int(event["params"]["OrderID"]), int(event["params"]["CustomerID"]))
+            value = get_order(cursor, int(event["params"]["order-id"]), int(event["params"]["customer-id"]))
         connection.commit()
         cursor.close()
         connection.close()
