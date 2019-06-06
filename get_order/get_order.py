@@ -34,13 +34,20 @@ def lambda_handler(event, context):
                                   host=host,
                                   port=port,
                                   database=db_name)
-    cursor = connection.cursor()
-    try:
-        invoice_id = int(event["OrderID"])
-        customer_id = int(event["CustomerID"])
-    except:
-        return fail()
 
+    try:
+        cursor = connection.cursor()
+        if event.get("Method","") =="GET":
+            value = get_order(cursor, int(event["params"]["OrderID"]), int(event["params"]["CustomerID"]))
+        connection.commit()
+        cursor.close()
+        connection.close()
+    except Exception as e:
+        print(e)
+        return fail()
+    return done(value)
+
+def get_order(cursor, invoice_id, customer_id):
     order = '{';
     metadata = parse_order_metadata(cursor, invoice_id, customer_id)
     if metadata is None:
@@ -48,12 +55,9 @@ def lambda_handler(event, context):
     order += metadata
     order += ','
     order += parse_order_lines(cursor, invoice_id)
-    order += '}';
+    order += '}'
+    return order
 
-    connection.commit()
-    cursor.close()
-    connection.close()
-    return done(order)
 
 def parse_order_metadata(cursor, invoice_id, customer_id):
     cursor.execute("SELECT \"CustomerID\", \"ShippedDate\", \"PaymentDate\", \"LogtagInvoiceNumber\" FROM public.\"Invoice\" WHERE \"InvoiceID\"= %s AND \"CustomerID\"= %s",(str(invoice_id),str(customer_id)))
