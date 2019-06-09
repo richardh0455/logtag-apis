@@ -37,10 +37,10 @@ def lambda_handler(event, context):
 
     try:
         cursor = connection.cursor()
-        if event.get("Method","") =="PUT":
-            value = update_order(cursor, int(event["query"]["order-id"]), event["body"])
-        elif if event.get("Method","")  =="DELETE":
-            value = delete_order(cursor, int(event["params"]["order-id"]))
+        if event.get("Method","") =="POST":
+            value = create_order_item(cursor, int(event["params"]["order-id"]), event["body"])
+        elif event.get("Method","") =="GET":
+            value = get_order_items(cursor, int(event["params"]["order-id"]))
         else:
             return fail()    
         connection.commit()
@@ -51,11 +51,22 @@ def lambda_handler(event, context):
         return fail()
     return done(value)
 
-
-def update_order(cursor, invoice_id, body):
-    cursor.execute("UPDATE public.\"Invoice\" SET \"CustomerID\" = %s, \"ShippedDate\" = %s, \"PaymentDate\" = %s, \"LogtagInvoiceNumber\" = %s WHERE \"InvoiceID\"= %s ", (int(body["CustomerID"]), body["ShippedDate"], body["PaymentDate"], body["LogtagInvoiceNumber"], invoice_id))
+def create_order_item(cursor, invoiceID, item):
+    variationID = item["VariationID"]
+    if(line["VariationID"] == "NULL"):
+        variationID = "0"
+    cursor.execute("INSERT into public.\"InvoiceLine\" (\"InvoiceID\", \"Quantity\", \"ProductID\", \"Pricing\", \"VariationID\")  VALUES ( %s, %s, %s, %s, %s )", (invoiceID, int(item["Quantity"]), int(item["ProductID"]), Decimal(item["Price"]),int(variationID)))
     return {"AffectedRows":cursor.rowcount}
 
-def delete_order(cursor, invoiceID):
-    cursor.execute("DELETE from public.\"Invoice\" WHERE \"InvoiceID\"= %s", (str(invoiceID)))
-    return {"AffectedRows":cursor.rowcount}
+def get_order_items(cursor, invoiceID):
+    cursor.execute("SELECT \"ProductID\", \"VariationID\", \"Pricing\", \"Quantity\" FROM public.\"InvoiceLine\" WHERE \"InvoiceID\"= %s",(str(invoice_id),))
+    result = '\"OrderLines\": ['
+    list =[]
+    for row in cursor.fetchall():
+        line = '{'
+        line += "\"ProductID\": \""+str(row[0])+"\"," +"\"VariationID\": \""+str(row[1])+"\"," +"\"Pricing\": \""+str(row[2])+"\"," + '\"Quantity\": \"' + str(row[3]) + '\"'
+        line += '}'
+        list.append(line)
+    result += ','.join(list)
+    result += ']'
+    return result

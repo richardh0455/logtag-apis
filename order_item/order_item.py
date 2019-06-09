@@ -37,10 +37,10 @@ def lambda_handler(event, context):
 
     try:
         cursor = connection.cursor()
-        if event.get("Method","") =="PUT":
-            value = update_order(cursor, int(event["query"]["order-id"]), event["body"])
-        elif if event.get("Method","")  =="DELETE":
-            value = delete_order(cursor, int(event["params"]["order-id"]))
+        if event.get("Method","")  =="PUT":
+            value = update_order_item(cursor, event["query"]["ID"], event["body"])
+        elif event.get("Method","")  =="DELETE":
+            value = delete_order_item(cursor, event["query"]["ID"])
         else:
             return fail()    
         connection.commit()
@@ -52,10 +52,10 @@ def lambda_handler(event, context):
     return done(value)
 
 
-def update_order(cursor, invoice_id, body):
-    cursor.execute("UPDATE public.\"Invoice\" SET \"CustomerID\" = %s, \"ShippedDate\" = %s, \"PaymentDate\" = %s, \"LogtagInvoiceNumber\" = %s WHERE \"InvoiceID\"= %s ", (int(body["CustomerID"]), body["ShippedDate"], body["PaymentDate"], body["LogtagInvoiceNumber"], invoice_id))
+def update_order_item(cursor, lineID, item):
+    cursor.execute("UPDATE public.\"InvoiceLine\" SET \"Quantity\" = %s, \"ProductID\" = %s, \"Pricing\" = %s, \"VariationID\" = %s WHERE \"LineID\"= %s ", (int(item["Quantity"]), int(item["ProductID"]), Decimal(item["Price"]),int(variationID), lineID))
     return {"AffectedRows":cursor.rowcount}
 
-def delete_order(cursor, invoiceID):
-    cursor.execute("DELETE from public.\"Invoice\" WHERE \"InvoiceID\"= %s", (str(invoiceID)))
+def delete_order_item(cursor, lineID):
+    cursor.execute("DELETE from public.\"InvoiceLine\" WHERE \"LineID\"= %s", (int(lineID)))
     return {"AffectedRows":cursor.rowcount}

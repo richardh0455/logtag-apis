@@ -37,10 +37,10 @@ def lambda_handler(event, context):
 
     try:
         cursor = connection.cursor()
-        if event.get("Method","") =="PUT":
-            value = update_order(cursor, int(event["query"]["order-id"]), event["body"])
-        elif if event.get("Method","")  =="DELETE":
-            value = delete_order(cursor, int(event["params"]["order-id"]))
+        if event.get("Method","") =="GET":
+            value = get_orders(cursor, int(event["query"]["customer-id"]))
+        elif if event.get("Method","")  =="POST":
+            value = create_order(cursor, event["body"])
         else:
             return fail()    
         connection.commit()
@@ -51,11 +51,31 @@ def lambda_handler(event, context):
         return fail()
     return done(value)
 
+def get_orders(cursor, customer_id):
+    orders = '{[';
+    cursor.execute("SELECT \"CustomerID\", \"ShippedDate\", \"PaymentDate\", \"LogtagInvoiceNumber\" FROM public.\"Invoice\" WHERE \"CustomerID\"= %s",(str(customer_id)))
+    for row in cursor.fetchall():
+        result = '{'
+        result += "\"CustomerID\": \""+str(row[0])+"\"," + '\"ShippedDate\": \"' + str(row[1]) + '\",' + '\"PaymentDate\": \"' + str(row[2]) + '\",' + '\"LogtagInvoiceNumber\": \"' + str(row[3]) + '\"'
+        result += '},'
+    orders += ']}'
+    return order
 
 def update_order(cursor, invoice_id, body):
     cursor.execute("UPDATE public.\"Invoice\" SET \"CustomerID\" = %s, \"ShippedDate\" = %s, \"PaymentDate\" = %s, \"LogtagInvoiceNumber\" = %s WHERE \"InvoiceID\"= %s ", (int(body["CustomerID"]), body["ShippedDate"], body["PaymentDate"], body["LogtagInvoiceNumber"], invoice_id))
     return {"AffectedRows":cursor.rowcount}
 
-def delete_order(cursor, invoiceID):
-    cursor.execute("DELETE from public.\"Invoice\" WHERE \"InvoiceID\"= %s", (str(invoiceID)))
-    return {"AffectedRows":cursor.rowcount}
+
+def create_order(cursor, body):
+    count = generate_invoice_number(cursor)
+    logtagInvoiceNumber = 'IN'+datetime.now().strftime("%y%m%d")+'-'+str(count).zfill(2)
+    cursor.execute("INSERT into public.\"Invoice\" (\"CustomerID\", \"LogtagInvoiceNumber\")  VALUES ( %s, %s ) RETURNING \"InvoiceID\"", [int(body['CustomerID']), logtagInvoiceNumber])
+    row = cursor.fetchone()
+    return row[0]
+
+def generate_invoice_number(cursor):
+    cursor.execute("SELECT COUNT(*) FROM public.\"Invoice\" WHERE \"Created_At\"> now() - interval '1 day' ")
+    row = cursor.fetchone()
+    if row is None:
+        return 1
+    return row[0]+1;
