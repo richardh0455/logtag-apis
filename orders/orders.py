@@ -52,19 +52,15 @@ def lambda_handler(event, context):
     return done(value)
 
 def get_orders(cursor, customer_id):
-    orders = '{[';
+    orders = '{\"Orders\":[';
     cursor.execute("SELECT \"CustomerID\", \"ShippedDate\", \"PaymentDate\", \"LogtagInvoiceNumber\" FROM public.\"Invoice\" WHERE \"CustomerID\"= %s",(str(customer_id)))
     for row in cursor.fetchall():
         result = '{'
         result += "\"CustomerID\": \""+str(row[0])+"\"," + '\"ShippedDate\": \"' + str(row[1]) + '\",' + '\"PaymentDate\": \"' + str(row[2]) + '\",' + '\"LogtagInvoiceNumber\": \"' + str(row[3]) + '\"'
         result += '},'
+        orders+=result
     orders += ']}'
-    return order
-
-def update_order(cursor, invoice_id, body):
-    cursor.execute("UPDATE public.\"Invoice\" SET \"CustomerID\" = %s, \"ShippedDate\" = %s, \"PaymentDate\" = %s, \"LogtagInvoiceNumber\" = %s WHERE \"InvoiceID\"= %s ", (int(body["CustomerID"]), body["ShippedDate"], body["PaymentDate"], body["LogtagInvoiceNumber"], invoice_id))
-    return {"AffectedRows":cursor.rowcount}
-
+    return orders
 
 def create_order(cursor, body):
     count = generate_invoice_number(cursor)
