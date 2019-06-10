@@ -1,6 +1,7 @@
 import psycopg2
 import json
 import os
+from datetime import datetime
 
 host  = os.environ['RDS_HOST']
 port = os.environ['PORT']
@@ -76,7 +77,7 @@ def create_order(cursor, body):
     logtagInvoiceNumber = 'IN'+datetime.now().strftime("%y%m%d")+'-'+str(count).zfill(2)
     cursor.execute("INSERT into public.\"Invoice\" (\"CustomerID\", \"LogtagInvoiceNumber\")  VALUES ( %s, %s ) RETURNING \"InvoiceID\"", [int(body['CustomerID']), logtagInvoiceNumber])
     row = cursor.fetchone()
-    return row[0]
+    return {"InvoiceID":row[0]}
 
 def generate_invoice_number(cursor):
     cursor.execute("SELECT COUNT(*) FROM public.\"Invoice\" WHERE \"Created_At\"> now() - interval '1 day' ")
