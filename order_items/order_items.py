@@ -53,7 +53,7 @@ def lambda_handler(event, context):
 
 def create_order_item(cursor, invoice_id, item):
     variationID = item["VariationID"]
-    if(line["VariationID"] == "NULL"):
+    if(item["VariationID"] == "NULL"):
         variationID = "0"
     cursor.execute("INSERT into public.\"InvoiceLine\" (\"InvoiceID\", \"Quantity\", \"ProductID\", \"Pricing\", \"VariationID\")  VALUES ( %s, %s, %s, %s, %s )", (invoice_id, int(item["Quantity"]), int(item["ProductID"]), Decimal(item["Price"]),int(variationID)))
     return {"AffectedRows":cursor.rowcount}
