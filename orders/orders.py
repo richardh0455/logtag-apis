@@ -75,7 +75,7 @@ def get_orders_by_customer(cursor, customer_id):
 def create_order(cursor, body):
     count = generate_invoice_number(cursor)
     logtagInvoiceNumber = 'IN'+datetime.now().strftime("%y%m%d")+'-'+str(count).zfill(2)
-    cursor.execute("INSERT into public.\"Invoice\" (\"CustomerID\", \"LogtagInvoiceNumber\")  VALUES ( %s, %s ) RETURNING \"InvoiceID\"", [int(body['CustomerID']), logtagInvoiceNumber])
+    cursor.execute("INSERT into public.\"Invoice\" (\"CustomerID\", \"LogtagInvoiceNumber\", \"Currency\", \"PurchaseOrderID\")  VALUES ( %s, %s, %s, %s ) RETURNING \"InvoiceID\"", (int(body['CustomerID']), logtagInvoiceNumber, body['Currency'], body['PurchaseOrderNumber']))
     row = cursor.fetchone()
     return {"InvoiceID":row[0]}
 
