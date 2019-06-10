@@ -1,6 +1,7 @@
 import psycopg2
 import json
 import os
+from decimal import Decimal
 
 host  = os.environ['RDS_HOST']
 port = os.environ['PORT']
@@ -42,7 +43,7 @@ def lambda_handler(event, context):
         elif event.get("Method","")  =="DELETE":
             value = delete_order_item(cursor, event["query"]["ID"])
         else:
-            return fail()    
+            return fail()
         connection.commit()
         cursor.close()
         connection.close()
