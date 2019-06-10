@@ -39,10 +39,10 @@ def lambda_handler(event, context):
         cursor = connection.cursor()
         if event.get("Method","") =="GET":
             value = get_orders(cursor, int(event["query"]["customer-id"]))
-        elif if event.get("Method","")  =="POST":
+        elif event.get("Method","")  =="POST":
             value = create_order(cursor, event["body"])
         else:
-            return fail()    
+            return fail()
         connection.commit()
         cursor.close()
         connection.close()
