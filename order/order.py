@@ -39,10 +39,10 @@ def lambda_handler(event, context):
         cursor = connection.cursor()
         if event.get("Method","") =="PUT":
             value = update_order(cursor, int(event["query"]["order-id"]), event["body"])
-        elif if event.get("Method","")  =="DELETE":
+        elif event.get("Method","")  =="DELETE":
             value = delete_order(cursor, int(event["params"]["order-id"]))
         else:
-            return fail()    
+            return fail()
         connection.commit()
         cursor.close()
         connection.close()
