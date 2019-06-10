@@ -56,6 +56,6 @@ def update_order(cursor, invoice_id, body):
     cursor.execute("UPDATE public.\"Invoice\" SET \"CustomerID\" = %s, \"ShippedDate\" = %s, \"PaymentDate\" = %s, \"LogtagInvoiceNumber\" = %s WHERE \"InvoiceID\"= %s ", (int(body["CustomerID"]), body["ShippedDate"], body["PaymentDate"], body["LogtagInvoiceNumber"], invoice_id))
     return {"AffectedRows":cursor.rowcount}
 
-def delete_order(cursor, invoiceID):
-    cursor.execute("DELETE from public.\"Invoice\" WHERE \"InvoiceID\"= %s", (str(invoiceID)))
+def delete_order(cursor, invoice_id):
+    cursor.execute("DELETE from public.\"Invoice\" WHERE \"InvoiceID\"= %s", (invoice_id,))
     return {"AffectedRows":cursor.rowcount}
