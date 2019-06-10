@@ -42,7 +42,7 @@ def lambda_handler(event, context):
         elif event.get("Method","") =="GET":
             value = get_order_items(cursor, int(event["params"]["order-id"]))
         else:
-            return fail()    
+            return fail()
         connection.commit()
         cursor.close()
         connection.close()
@@ -51,15 +51,15 @@ def lambda_handler(event, context):
         return fail()
     return done(value)
 
-def create_order_item(cursor, invoiceID, item):
+def create_order_item(cursor, invoice_id, item):
     variationID = item["VariationID"]
     if(line["VariationID"] == "NULL"):
         variationID = "0"
-    cursor.execute("INSERT into public.\"InvoiceLine\" (\"InvoiceID\", \"Quantity\", \"ProductID\", \"Pricing\", \"VariationID\")  VALUES ( %s, %s, %s, %s, %s )", (invoiceID, int(item["Quantity"]), int(item["ProductID"]), Decimal(item["Price"]),int(variationID)))
+    cursor.execute("INSERT into public.\"InvoiceLine\" (\"InvoiceID\", \"Quantity\", \"ProductID\", \"Pricing\", \"VariationID\")  VALUES ( %s, %s, %s, %s, %s )", (invoice_id, int(item["Quantity"]), int(item["ProductID"]), Decimal(item["Price"]),int(variationID)))
     return {"AffectedRows":cursor.rowcount}
 
-def get_order_items(cursor, invoiceID):
-    cursor.execute("SELECT \"ProductID\", \"VariationID\", \"Pricing\", \"Quantity\" FROM public.\"InvoiceLine\" WHERE \"InvoiceID\"= %s",(str(invoice_id),))
+def get_order_items(cursor, invoice_id):
+    cursor.execute("SELECT \"ProductID\", \"VariationID\", \"Pricing\", \"Quantity\" FROM public.\"InvoiceLine\" WHERE \"InvoiceID\"= %s",(invoice_id,))
     result = '\"OrderLines\": ['
     list =[]
     for row in cursor.fetchall():
