@@ -60,12 +60,12 @@ def create_order_item(cursor, invoice_id, item):
     return {"AffectedRows":cursor.rowcount}
 
 def get_order_items(cursor, invoice_id):
-    cursor.execute("SELECT \"ProductID\", \"VariationID\", \"Pricing\", \"Quantity\" FROM public.\"InvoiceLine\" WHERE \"InvoiceID\"= %s",(invoice_id,))
-    result = '\"OrderLines\": ['
+    cursor.execute("SELECT \"LineID\", \"ProductID\", \"VariationID\", \"Pricing\", \"Quantity\" FROM public.\"InvoiceLine\" WHERE \"InvoiceID\"= %s",(invoice_id,))
+    result = '['
     list =[]
     for row in cursor.fetchall():
         line = '{'
-        line += "\"ProductID\": \""+str(row[0])+"\"," +"\"VariationID\": \""+str(row[1])+"\"," +"\"Pricing\": \""+str(row[2])+"\"," + '\"Quantity\": \"' + str(row[3]) + '\"'
+        line += "\"LineID\": \""+str(row[0])+"\"," + "\"ProductID\": \""+str(row[1])+"\"," +"\"VariationID\": \""+str(row[2])+"\"," +"\"Pricing\": \""+str(row[3])+"\"," + '\"Quantity\": \"' + str(row[4]) + '\"'
         line += '}'
         list.append(line)
     result += ','.join(list)
