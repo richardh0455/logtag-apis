@@ -38,7 +38,7 @@ def lambda_handler(event, context):
     try:
         cursor = connection.cursor()
         if event.get("Method","") =="GET":
-            value = get_orders(cursor, int(event["query"]["customer-id"]))
+            value = get_orders(cursor, event["query"]["customer-id"])
         elif event.get("Method","")  =="POST":
             value = create_order(cursor, event["body"])
         else:
@@ -52,8 +52,11 @@ def lambda_handler(event, context):
     return done(value)
 
 def get_orders(cursor, customer_id):
+    if(int(customer_id)):
+        get_orders_by_customer(cursor, customer_id)
+    else:
+        get_all_orders(cursor)
     orders = '{\"Orders\":[';
-    cursor.execute("SELECT \"CustomerID\", \"ShippedDate\", \"PaymentDate\", \"LogtagInvoiceNumber\" FROM public.\"Invoice\" WHERE \"CustomerID\"= %s",(str(customer_id)))
     for row in cursor.fetchall():
         result = '{'
         result += "\"CustomerID\": \""+str(row[0])+"\"," + '\"ShippedDate\": \"' + str(row[1]) + '\",' + '\"PaymentDate\": \"' + str(row[2]) + '\",' + '\"LogtagInvoiceNumber\": \"' + str(row[3]) + '\"'
@@ -61,6 +64,12 @@ def get_orders(cursor, customer_id):
         orders+=result
     orders += ']}'
     return orders
+
+def get_all_orders(cursor):
+    cursor.execute("SELECT \"CustomerID\", \"ShippedDate\", \"PaymentDate\", \"LogtagInvoiceNumber\" FROM public.\"Invoice\"")
+
+def get_orders_by_customer(cursor, customer_id):
+    cursor.execute("SELECT \"CustomerID\", \"ShippedDate\", \"PaymentDate\", \"LogtagInvoiceNumber\" FROM public.\"Invoice\" WHERE \"CustomerID\"= %s",(str(customer_id)))
 
 def create_order(cursor, body):
     count = generate_invoice_number(cursor)
