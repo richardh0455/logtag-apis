@@ -38,7 +38,7 @@ def lambda_handler(event, context):
     try:
         cursor = connection.cursor()
         if event.get("Method","") =="PUT":
-            value = update_order(cursor, int(event["query"]["order-id"]), event["body"])
+            value = update_order(cursor, int(event["params"]["order-id"]), event["body"])
         elif event.get("Method","")  =="DELETE":
             value = delete_order(cursor, int(event["params"]["order-id"]))
         else:
