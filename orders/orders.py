@@ -63,7 +63,7 @@ def get_orders(cursor, queryParams):
         result += "\"CustomerID\": \""+str(row[0])+"\"," + '\"ShippedDate\": \"' + str(row[1]) + '\",' + '\"PaymentDate\": \"' + str(row[2]) + '\",' + '\"LogtagInvoiceNumber\": \"' + str(row[3]) + '\",' + '\"Currency\": \"' + str(row[4]) + '\",' + '\"PurchaseOrderNumber\": \"' + str(row[5]) + '\"'
         result += '}'
         orders.append(result)
-    return ','.join(orders)
+    return '['+','.join(orders)+']'
 
 def get_all_orders(cursor):
     cursor.execute("SELECT \"CustomerID\", \"ShippedDate\", \"PaymentDate\", \"LogtagInvoiceNumber\", \"Currency\", \"PurchaseOrderID\" FROM public.\"Invoice\"")
