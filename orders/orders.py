@@ -60,16 +60,16 @@ def get_orders(cursor, queryParams):
     orders = [];
     for row in cursor.fetchall():
         result = '{'
-        result += "\"CustomerID\": \""+str(row[0])+"\"," + '\"ShippedDate\": \"' + str(row[1]) + '\",' + '\"PaymentDate\": \"' + str(row[2]) + '\",' + '\"LogtagInvoiceNumber\": \"' + str(row[3]) + '\",' + '\"Currency\": \"' + str(row[4]) + '\",' + '\"PurchaseOrderNumber\": \"' + str(row[5]) + '\"'
+        result += "\"CustomerID\": \""+str(row[0])+"\"," + '\"ShippedDate\": \"' + str(row[1]) + '\",' + '\"PaymentDate\": \"' + str(row[2]) + '\",' + '\"LogtagInvoiceNumber\": \"' + str(row[3]) + '\",' + '\"Currency\": \"' + str(row[4]) + '\",' + '\"PurchaseOrderNumber\": \"' + str(row[5]) + '\",'+ '\"InvoiceID\": \"' + str(row[6]) + '\"'
         result += '}'
         orders.append(result)
     return '['+','.join(orders)+']'
 
 def get_all_orders(cursor):
-    cursor.execute("SELECT \"CustomerID\", \"ShippedDate\", \"PaymentDate\", \"LogtagInvoiceNumber\", \"Currency\", \"PurchaseOrderID\" FROM public.\"Invoice\"")
+    cursor.execute("SELECT \"CustomerID\", \"ShippedDate\", \"PaymentDate\", \"LogtagInvoiceNumber\", \"Currency\", \"PurchaseOrderID\", \"InvoiceID\"  FROM public.\"Invoice\"")
 
 def get_orders_by_customer(cursor, customer_id):
-    cursor.execute("SELECT \"CustomerID\", \"ShippedDate\", \"PaymentDate\", \"LogtagInvoiceNumber\", \"Currency\", \"PurchaseOrderID\" FROM public.\"Invoice\" WHERE \"CustomerID\"= %s",(str(customer_id)))
+    cursor.execute("SELECT \"CustomerID\", \"ShippedDate\", \"PaymentDate\", \"LogtagInvoiceNumber\", \"Currency\", \"PurchaseOrderID\", \"InvoiceID\" FROM public.\"Invoice\" WHERE \"CustomerID\"= %s",(str(customer_id)))
 
 def create_order(cursor, body):
     count = generate_invoice_number(cursor)
