@@ -57,14 +57,13 @@ def get_orders(cursor, queryParams):
         get_orders_by_customer(cursor, int(queryParams["customer_id"]))
     else:
         get_all_orders(cursor)
-    orders = '[';
+    orders = [];
     for row in cursor.fetchall():
         result = '{'
         result += "\"CustomerID\": \""+str(row[0])+"\"," + '\"ShippedDate\": \"' + str(row[1]) + '\",' + '\"PaymentDate\": \"' + str(row[2]) + '\",' + '\"LogtagInvoiceNumber\": \"' + str(row[3]) + '\",' + '\"Currency\": \"' + str(row[4]) + '\",' + '\"PurchaseOrderNumber\": \"' + str(row[5]) + '\"'
-        result += '},'
-        orders+=result
-    orders += ']'
-    return orders
+        result += '}'
+        orders.append(result)
+    return ','.join(orders)
 
 def get_all_orders(cursor):
     cursor.execute("SELECT \"CustomerID\", \"ShippedDate\", \"PaymentDate\", \"LogtagInvoiceNumber\", \"Currency\", \"PurchaseOrderID\" FROM public.\"Invoice\"")
