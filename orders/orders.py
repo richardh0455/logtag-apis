@@ -77,7 +77,7 @@ def create_order(cursor, body):
     logtagInvoiceNumber = 'IN'+datetime.now().strftime("%y%m%d")+'-'+str(count).zfill(2)
     cursor.execute("INSERT into public.\"Invoice\" (\"CustomerID\", \"LogtagInvoiceNumber\", \"Currency\", \"PurchaseOrderID\")  VALUES ( %s, %s, %s, %s ) RETURNING \"InvoiceID\"", (int(body['CustomerID']), logtagInvoiceNumber, body['Currency'], body['PurchaseOrderNumber']))
     row = cursor.fetchone()
-    return {"InvoiceID":row[0]}
+    return {"InvoiceID":row[0], "LogtagInvoiceNumber":logtagInvoiceNumber}
 
 def generate_invoice_number(cursor):
     cursor.execute("SELECT COUNT(*) FROM public.\"Invoice\" WHERE \"Created_At\"> now() - interval '1 day' ")
