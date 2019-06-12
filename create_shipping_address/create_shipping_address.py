@@ -25,16 +25,22 @@ def lambda_handler(event, context):
                                   host=host,
                                   port=port,
                                   database=db_name)
-    cursor = connection.cursor()   
-    shipping_address_id = create_shipping_address(cursor, event["CustomerID"],event["ShippingAddress"])
+    cursor = connection.cursor()
+    if(event["body"]["ShippingAddress"]):
+        shipping_address_id = create_old_shipping_address(cursor, event["params"]["CustomerID"], event["body"]["ShippingAddress"])
+    else:
+        shipping_address_id = create_new_shipping_address(cursor, event["params"]["CustomerID"], event["body"])
     connection.commit()
     cursor.close()
     connection.close()
     return done(json.dumps('{ \"ShippingAddressID\":\"'+str(shipping_address_id)+'\"}'))
-    
-def create_shipping_address(cursor, customer_id, shipping_address):
+
+def create_old_shipping_address(cursor, customer_id, shipping_address):
     create_shipping_address = cursor.execute("INSERT into public.\"CustomerShippingAddress\" (\"CustomerID\", \"ShippingAddress\")  VALUES ( %s, %s) RETURNING \"ShippingAddressID\"", (customer_id, shipping_address))
     row = cursor.fetchone()
     return row[0]
 
-    
+def create_new_shipping_address(cursor, customer_id, body):
+    create_shipping_address = cursor.execute("INSERT into public.\"CustomerShippingAddress\" (\"CustomerID\", \"Street\", \"Suburb\", \"City\", \"State\", \"Country\", \"PostCode\")  VALUES ( %s, %s, %s, %s, %s, %s, %s) RETURNING \"ShippingAddressID\"", (customer_id,  event["Street"],  event["Suburb"],  event["City"],  event["State"],  event["Country"],  event["PostCode"]))
+    row = cursor.fetchone()
+    return row[0]
