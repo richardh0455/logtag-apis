@@ -68,7 +68,7 @@ def create_new_shipping_address(cursor, customer_id, body):
 
 def get_shipping_addresses(cursor, customer_id):
     cursor.execute("SELECT \"ShippingAddressID\", \"Street\", \"Suburb\", \"City\", \"State\", \"Country\", \"PostCode\" FROM public.\"CustomerShippingAddress\" WHERE \"CustomerID\"= %s", (customer_id,))
-    result = '\"ShippingAddresses\": ['
+    result = '['
     list =[]
     for row in cursor.fetchall():
         address = '{'
