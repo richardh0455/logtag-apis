@@ -41,6 +41,6 @@ def create_old_shipping_address(cursor, customer_id, shipping_address):
     return row[0]
 
 def create_new_shipping_address(cursor, customer_id, body):
-    create_shipping_address = cursor.execute("INSERT into public.\"CustomerShippingAddress\" (\"CustomerID\", \"Street\", \"Suburb\", \"City\", \"State\", \"Country\", \"PostCode\")  VALUES ( %s, %s, %s, %s, %s, %s, %s) RETURNING \"ShippingAddressID\"", (customer_id,  event["Street"],  event["Suburb"],  event["City"],  event["State"],  event["Country"],  event["PostCode"]))
+    create_shipping_address = cursor.execute("INSERT into public.\"CustomerShippingAddress\" (\"CustomerID\", \"Street\", \"Suburb\", \"City\", \"State\", \"Country\", \"PostCode\")  VALUES ( %s, %s, %s, %s, %s, %s, %s) RETURNING \"ShippingAddressID\"", (customer_id,  body["Street"],  body["Suburb"],  body["City"],  body["State"],  body["Country"],  body["PostCode"]))
     row = cursor.fetchone()
     return row[0]
