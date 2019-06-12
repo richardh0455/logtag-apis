@@ -37,9 +37,9 @@ def lambda_handler(event, context):
                                   database=db_name)
     cursor = connection.cursor()
     if event.get("Method","") =="PUT":
-        value = update_shipping_address(cursor, event["params"]["billing-address-id"], event["params"]["customer-id"], event["body"])
+        value = update_billing_address(cursor, event["params"]["billing-address-id"], event["params"]["customer-id"], event["body"])
     elif event.get("Method","")  =="DELETE":
-        value = delete_shipping_address(cursor, event["params"]["billing-address-id"], event["params"]["customer-id"])
+        value = delete_billing_address(cursor, event["params"]["billing-address-id"], event["params"]["customer-id"])
     else:
         return fail()
     connection.commit()
@@ -47,10 +47,10 @@ def lambda_handler(event, context):
     connection.close()
     return done(value)
 
-def update_shipping_address(cursor, billing_address_id, customer_id,  body):
+def update_billing_address(cursor, billing_address_id, customer_id,  body):
     cursor.execute("UPDATE public.\"CustomerBillingAddress\" SET \"Street\"=%s,\"Suburb\"=%s,\"City\"=%s,\"State\"=%s,\"Country\"=%s,\"PostCode\"=%s WHERE \"BillingAddressID\" =%s AND \"CustomerID\" =%s", (body["Street"],body["Suburb"],body["City"],body["State"],body["Country"],body["PostCode"], billing_address_id, customer_id))
     return {"AffectedRows":cursor.rowcount}
 
-def delete_shipping_address(cursor, billing_address_id, customer_id):
+def delete_billing_address(cursor, billing_address_id, customer_id):
     cursor.execute("DELETE from public.\"CustomerBillingAddress\" WHERE \"BillingAddressID\" = %s AND \"CustomerID\" = %s", (billing_address_id, customer_id))
     return {"AffectedRows":cursor.rowcount}
