@@ -47,8 +47,6 @@ def lambda_handler(event, context):
     customer = '{';
     customer += parse_contact_info(cursor, customer_id)
     customer += ','
-    customer += parse_shipping_addresses(cursor, customer_id)
-    customer += ','
     customer += parse_courier_accounts(cursor, customer_id)
     customer += ','
     customer += parse_hs_codes(cursor, customer_id)
@@ -86,18 +84,7 @@ def parse_contact_info(cursor, customer_id):
     result += '}'
     return result
 
-def parse_shipping_addresses(cursor, customer_id):
-    cursor.execute("SELECT \"ShippingAddressID\", \"ShippingAddress\" FROM public.\"CustomerShippingAddress\" WHERE \"CustomerID\"= %s", (str(customer_id),))
-    result = '\"ShippingAddresses\": ['
-    list =[]
-    for row in cursor.fetchall():
-        address = '{'
-        address += "\"ID\": \""+str(row[0])+"\"," + '\"ShippingAddress\": \"' + str(row[1]) + '\"'
-        address += '}'
-        list.append(address)
-    result += ','.join(list)
-    result += ']'
-    return result
+
 
 def parse_courier_accounts(cursor, customer_id):
     cursor.execute("SELECT \"ID\", \"CourierAccount\" FROM public.\"CustomerCourierAccount\" WHERE \"CustomerID\"= %s", (str(customer_id),))
