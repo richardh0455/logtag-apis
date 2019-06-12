@@ -26,7 +26,7 @@ def lambda_handler(event, context):
                                   port=port,
                                   database=db_name)
     cursor = connection.cursor()
-    if(event["body"]["ShippingAddress"]):
+    if("ShippingAddress" in event["body"]):
         shipping_address_id = create_old_shipping_address(cursor, event["params"]["customer-id"], event["body"]["ShippingAddress"])
     else:
         shipping_address_id = create_new_shipping_address(cursor, event["params"]["customer-id"], event["body"])
