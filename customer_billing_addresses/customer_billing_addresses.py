@@ -39,7 +39,7 @@ def lambda_handler(event, context):
     if event.get("Method","") =="GET":
         value = get_billing_addresses(cursor, event["params"]["customer-id"])
     elif event.get("Method","")  =="POST":
-        value = create_billing_address(cursor, event)
+        value = create_billing_address(cursor, event, event["params"]["customer-id"])
     else:
         return fail()
     connection.commit()
@@ -48,7 +48,7 @@ def lambda_handler(event, context):
     return done(value)
 
 
-def create_billing_address(cursor, event):
+def create_billing_address(cursor, event, customer_id):
     cursor.execute("INSERT into public.\"CustomerBillingAddress\" (\"CustomerID\", \"Street\", \"Suburb\", \"City\", \"State\", \"Country\", \"PostCode\")  VALUES ( %s, %s, %s, %s, %s, %s, %s) RETURNING \"BillingAddressID\"", (customer_id,  body["Street"],  body["Suburb"],  body["City"],  body["State"],  body["Country"],  body["PostCode"]))
     row = cursor.fetchone()
     return done(json.dumps('{ \"BillingAddressID\":\"'+str(row[0])+'\"}'))
