@@ -53,7 +53,7 @@ def lambda_handler(event, context):
     return done(value)
 
 def get_orders(cursor, queryParams):
-    if('customer_id' in queryParams):
+    if('customer-id' in queryParams):
         get_orders_by_customer(cursor, int(queryParams["customer_id"]))
     else:
         get_all_orders(cursor)
