@@ -1,6 +1,7 @@
 import psycopg2
 import json
 import os
+import logging
 
 host  = os.environ['RDS_HOST']
 port = os.environ['PORT']
@@ -48,12 +49,13 @@ def lambda_handler(event, context):
         connection.close()
     except Exception as e:
         print(e)
+        logging.exception("Something awful happened!")
         return fail()
     return done(value)
 
 
 def update_order(cursor, invoice_id, body):
-    cursor.execute("UPDATE public.\"Invoice\" SET \"CustomerID\" = %s, \"ShippedDate\" = %s, \"PaymentDate\" = %s, \"LogtagInvoiceNumber\" = %s WHERE \"InvoiceID\"= %s ", (int(body["CustomerID"]), body["ShippedDate"], body["PaymentDate"], body["LogtagInvoiceNumber"], invoice_id))
+    cursor.execute("UPDATE public.\"Invoice\" SET \"ShippedDate\" = %s, \"PaymentDate\" = %s, \"Currency\" = %s, \"CourierAccountID\" = %s, \"ShippingAddressID\" = %s, \"HSCodeID\" = %s, \"PurchaseOrderID\" = %s WHERE \"InvoiceID\"= %s ", ( body.get("ShippingDate",None), body.get("PaymentDate",None), body["Currency"], int(body["CourierAccountID"]), int(body["ShippingAddressID"]), int(body["HSCodeID"]), int(body["PurchaseOrderNumber"]), invoice_id))
     return {"AffectedRows":cursor.rowcount}
 
 def delete_order(cursor, invoice_id):
