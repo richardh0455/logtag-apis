@@ -35,8 +35,15 @@ def lambda_handler(event, context):
     return done(result)
 
 def parse_row(row):
-    result = '{'
-    result += "\"Description\":\""+row[0]+"\","
-    result += "\"Price\":\""+str(row[1])+"\""
-    result += '}'
-    return result
+    if row is not None:
+        result = '{'
+        result += "\"Description\":\""+row[0]+"\","
+        result += "\"Price\":\""+str(row[1])+"\""
+        result += '}'
+        return result
+    else:
+        result = '{'
+        result += "\"Description\":\"\","
+        result += "\"Price\":\"\""
+        result += '}'
+        return result
