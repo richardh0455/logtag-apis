@@ -60,21 +60,31 @@ def get_orders(cursor, queryParams):
     orders = [];
     for row in cursor.fetchall():
         result = '{'
-        result += "\"CustomerID\": \""+str(row[0])+"\"," + '\"ShippedDate\": \"' + str(row[1]) + '\",' + '\"PaymentDate\": \"' + str(row[2]) + '\",' + '\"LogtagInvoiceNumber\": \"' + str(row[3]) + '\",' + '\"Currency\": \"' + str(row[4]) + '\",' + '\"PurchaseOrderNumber\": \"' + str(row[5]) + '\",'+ '\"InvoiceID\": \"' + str(row[6]) + '\"'
+        result += "\"CustomerID\": \""+str(row[0])+"\","
+        + '\"ShippedDate\": \"' + str(row[1]) + '\",'
+        + '\"PaymentDate\": \"' + str(row[2]) + '\",'
+        + '\"LogtagInvoiceNumber\": \"' + str(row[3]) + '\",'
+        + '\"Currency\": \"' + str(row[4]) + '\",'
+        + '\"PurchaseOrderNumber\": \"' + str(row[5]) + '\",'
+        + '\"InvoiceID\": \"' + str(row[6]) + '\",'
+        + '\"CourierAccountID\": \"' + str(row[7]) + '\",'
+        + '\"HSCodeID\": \"' + str(row[8]) + '\"'
+        + '\"ShippingAddressID\": \"' + str(row[9]) + '\"'
+        + '\"BillingAddressID\": \"' + str(row[10]) + '\"'
         result += '}'
         orders.append(result)
     return '['+','.join(orders)+']'
 
 def get_all_orders(cursor):
-    cursor.execute("SELECT \"CustomerID\", \"ShippedDate\", \"PaymentDate\", \"LogtagInvoiceNumber\", \"Currency\", \"PurchaseOrderID\", \"InvoiceID\"  FROM public.\"Invoice\"")
+    cursor.execute("SELECT \"CustomerID\", \"ShippedDate\", \"PaymentDate\", \"LogtagInvoiceNumber\", \"Currency\", \"PurchaseOrderID\", \"InvoiceID\", \"CourierAccountID\", \"HSCodeID\", \"ShippingAddressID\", \"BillingAddressID\"  FROM public.\"Invoice\"")
 
 def get_orders_by_customer(cursor, customer_id):
-    cursor.execute("SELECT \"CustomerID\", \"ShippedDate\", \"PaymentDate\", \"LogtagInvoiceNumber\", \"Currency\", \"PurchaseOrderID\", \"InvoiceID\" FROM public.\"Invoice\" WHERE \"CustomerID\"= %s",(str(customer_id),))
+    cursor.execute("SELECT \"CustomerID\", \"ShippedDate\", \"PaymentDate\", \"LogtagInvoiceNumber\", \"Currency\", \"PurchaseOrderID\", \"InvoiceID\", \"CourierAccountID\", \"HSCodeID\", \"ShippingAddressID\", \"BillingAddressID\" FROM public.\"Invoice\" WHERE \"CustomerID\"= %s",(str(customer_id),))
 
 def create_order(cursor, body):
     count = generate_invoice_number(cursor)
     logtagInvoiceNumber = 'IN'+datetime.now().strftime("%y%m%d")+'-'+str(count).zfill(2)
-    cursor.execute("INSERT into public.\"Invoice\" (\"CustomerID\", \"LogtagInvoiceNumber\", \"Currency\", \"PurchaseOrderID\")  VALUES ( %s, %s, %s, %s ) RETURNING \"InvoiceID\"", (int(body['CustomerID']), logtagInvoiceNumber, body['Currency'], body['PurchaseOrderNumber']))
+    cursor.execute("INSERT into public.\"Invoice\" (\"CustomerID\", \"LogtagInvoiceNumber\", \"Currency\", \"PurchaseOrderID\",\"CourierAccountID\",\"HSCodeID\", \"ShippingAddressID\", \"BillingAddressID\" )  VALUES ( %s, %s, %s, %s, %s, %s, %s, %s ) RETURNING \"InvoiceID\"", (int(body['CustomerID']), logtagInvoiceNumber, body['Currency'], body['PurchaseOrderNumber']), int(body['CourierAccountID']), int(body['HSCodeID']), int(body['ShippingAddressID']), int(body['BillingAddressID']))
     row = cursor.fetchone()
     return {"InvoiceID":row[0], "LogtagInvoiceNumber":logtagInvoiceNumber}
 
