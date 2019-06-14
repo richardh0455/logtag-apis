@@ -69,7 +69,7 @@ def get_all_orders(cursor):
     cursor.execute("SELECT \"CustomerID\", \"ShippedDate\", \"PaymentDate\", \"LogtagInvoiceNumber\", \"Currency\", \"PurchaseOrderID\", \"InvoiceID\"  FROM public.\"Invoice\"")
 
 def get_orders_by_customer(cursor, customer_id):
-    cursor.execute("SELECT \"CustomerID\", \"ShippedDate\", \"PaymentDate\", \"LogtagInvoiceNumber\", \"Currency\", \"PurchaseOrderID\", \"InvoiceID\" FROM public.\"Invoice\" WHERE \"CustomerID\"= %s",(str(customer_id)))
+    cursor.execute("SELECT \"CustomerID\", \"ShippedDate\", \"PaymentDate\", \"LogtagInvoiceNumber\", \"Currency\", \"PurchaseOrderID\", \"InvoiceID\" FROM public.\"Invoice\" WHERE \"CustomerID\"= %s",(str(customer_id),))
 
 def create_order(cursor, body):
     count = generate_invoice_number(cursor)
