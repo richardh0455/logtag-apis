@@ -56,8 +56,9 @@ def create_order_item(cursor, invoice_id, item):
     variationID = item["VariationID"]
     if(item["VariationID"] == "NULL"):
         variationID = "0"
-    cursor.execute("INSERT into public.\"InvoiceLine\" (\"InvoiceID\", \"Quantity\", \"ProductID\", \"Pricing\", \"VariationID\")  VALUES ( %s, %s, %s, %s, %s )", (invoice_id, int(item["Quantity"]), int(item["ProductID"]), Decimal(item["Price"]),int(variationID)))
-    return {"AffectedRows":cursor.rowcount}
+    cursor.execute("INSERT into public.\"InvoiceLine\" (\"InvoiceID\", \"Quantity\", \"ProductID\", \"Pricing\", \"VariationID\")  VALUES ( %s, %s, %s, %s, %s ) RETURNING \"LineID\"", (invoice_id, int(item["Quantity"]), int(item["ProductID"]), Decimal(item["Price"]),int(variationID)))
+    row = cursor.fetchone()
+    return {"ID":row[0]}
 
 def get_order_items(cursor, invoice_id):
     cursor.execute("SELECT \"LineID\", \"ProductID\", \"VariationID\", \"Pricing\", \"Quantity\" FROM public.\"InvoiceLine\" WHERE \"InvoiceID\"= %s",(invoice_id,))
