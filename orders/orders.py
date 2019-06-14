@@ -68,8 +68,8 @@ def get_orders(cursor, queryParams):
         + '\"PurchaseOrderNumber\": \"' + str(row[5]) + '\",'
         + '\"InvoiceID\": \"' + str(row[6]) + '\",'
         + '\"CourierAccountID\": \"' + str(row[7]) + '\",'
-        + '\"HSCodeID\": \"' + str(row[8]) + '\"'
-        + '\"ShippingAddressID\": \"' + str(row[9]) + '\"'
+        + '\"HSCodeID\": \"' + str(row[8]) + '\",'
+        + '\"ShippingAddressID\": \"' + str(row[9]) + '\",'
         + '\"BillingAddressID\": \"' + str(row[10]) + '\"'
         result += '}'
         orders.append(result)
