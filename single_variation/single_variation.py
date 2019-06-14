@@ -28,8 +28,7 @@ def done(response):
 def lambda_handler(event, context):
     cursor = connection.cursor()
     cursor.execute("SELECT \"Description\", \"Price\" FROM public.\"ProductConfiguration\" WHERE \"ConfigurationID\"= %s",(int(event["params"]["variation-id"]),))
-    list = []
-    row = cursor.fetchone():
+    row = cursor.fetchone()
     result = parse_row(row)
     connection.commit()
     cursor.close()
