@@ -55,7 +55,7 @@ def lambda_handler(event, context):
 
 
 def update_order(cursor, invoice_id, body):
-    cursor.execute("UPDATE public.\"Invoice\" SET \"ShippedDate\" = %s, \"PaymentDate\" = %s, \"Currency\" = %s, \"CourierAccountID\" = %s, \"ShippingAddressID\" = %s, \"HSCodeID\" = %s, \"PurchaseOrderID\" = %s WHERE \"InvoiceID\"= %s ", ( body.get("ShippingDate",None), body.get("PaymentDate",None), body["Currency"], int(body["CourierAccountID"]), int(body["ShippingAddressID"]), int(body["HSCodeID"]), int(body["PurchaseOrderNumber"]), invoice_id))
+    cursor.execute("UPDATE public.\"Invoice\" SET \"ShippedDate\" = %s, \"PaymentDate\" = %s, \"Currency\" = %s, \"CourierAccountID\" = %s, \"ShippingAddressID\" = %s, \"HSCodeID\" = %s, \"PurchaseOrderID\" = %s WHERE \"InvoiceID\"= %s ", ( body.get("ShippingDate",None), body.get("PaymentDate",None), body["Currency"], int(body["CourierAccountID"]), int(body["ShippingAddressID"]), int(body["HSCodeID"]), body["PurchaseOrderNumber"], invoice_id))
     return {"AffectedRows":cursor.rowcount}
 
 def delete_order(cursor, invoice_id):
