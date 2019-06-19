@@ -43,7 +43,7 @@ def lambda_handler(event, context):
             else:
                 value = get_price_lists_without_variation(cursor, event["params"]["customer-id"], event["query"]["product-id"])
         if event.get("Method","")  =="POST":
-            value = create_price_item(cursor,  event["params"]["customer-id"], event["query"]["product-id"], event["query"]["variation-id"], event["body"]["Price"], event["body"]["Lower_Range"], event["body"]["Upper_Range"])
+            value = create_price_item(cursor,  event["params"]["customer-id"], event["query"]["product-id"], event["query"].get("variation-id", None), event["body"]["Price"], event["body"]["Lower_Range"], event["body"]["Upper_Range"])
         if event.get("Method","")  =="PUT":
             value = update_price_item(cursor, event["query"]["ID"], event["params"]["customer-id"], event["query"]["product-id"], event["body"]["Price"], event["body"]["Lower_Range"], event["body"]["Upper_Range"])
         if event.get("Method","")  =="DELETE":
