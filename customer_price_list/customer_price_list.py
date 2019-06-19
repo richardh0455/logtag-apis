@@ -69,7 +69,7 @@ def get_price_lists(cursor, customer_id, product_id, variation_id):
     return result
 
 def get_price_lists_without_variation(cursor, customer_id, product_id):
-    cursor.execute("SELECT \"ID\", \"Price\", \"Lower_Range\", \"Upper_Range\"  FROM public.\"CustomerPriceList\" WHERE \"CustomerID\"= %s AND \"ProductID\" = %s", (customer_id, product_id))
+    cursor.execute("SELECT \"ID\", \"Price\", \"Lower_Range\", \"Upper_Range\" FROM public.\"CustomerPriceList\" WHERE \"CustomerID\"= %s AND \"ProductID\" = %s AND \"VariationID\" is NULL", (customer_id, product_id))
     list = []
     for row in cursor.fetchall():
         list.append(parse_price_item(row))
