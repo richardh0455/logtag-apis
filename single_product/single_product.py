@@ -37,15 +37,24 @@ def lambda_handler(event, context):
     updated_rows = 0
     try:
         cursor = connection.cursor()
-        update_product(cursor, event["ProductID"], event["Name"],event["Description"],Decimal(event["CostPrice"]) )
+        if event.get("Method","") =="PUT":
+            value = update_product(cursor, int(event["params"]["product-id"]), event["body"])
+        elif event.get("Method","")  =="DELETE":
+            value = delete_product(cursor, int(event["params"]["product-id"]))
+        else:
+            return fail()
         connection.commit()
-        updated_rows = cursor.rowcount
         cursor.close()
         connection.close()
-    except:
+    except Exception as e:
+        print(e)
         return fail()
+    return done(value)
 
-    return done({"AffectedRows":updated_rows})
+def update_product(cursor, productID, body):
+    cursor.execute("UPDATE public.\"Product\" SET \"Name\"= %s, \"Description\"= %s, \"CostPrice\"= %s WHERE \"ProductID\"= %s ", (body["Name"], body["Description"], Decimal(body["CostPrice"]), productID))
+    return {"AffectedRows":cursor.rowcount}
 
-def update_product(cursor, productID, name, description, cost_price):
-    cursor.execute("UPDATE public.\"Product\" SET \"Name\"= %s, \"Description\"= %s, \"CostPrice\"= %s WHERE \"ProductID\"= %s ", (name, description, cost_price, productID))
+def delete_product(cursor, product_id):
+    cursor.execute("DELETE from public.\"Product\" WHERE \"ProductID\"= %s", (product_id,))
+    return {"AffectedRows":cursor.rowcount}
