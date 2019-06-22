@@ -54,7 +54,7 @@ def lambda_handler(event, context):
 
 
 def create_product(cursor, body):
-    cursor.execute("INSERT into public.\"Product\" (\"Name\", \"Description\", \"CostPrice\" )  VALUES ( %s, %s, %s ) RETURNING \"ProductID\"",(body["Name"], body["Description"], Decimal(body["CostPrice"])))
+    cursor.execute("INSERT into public.\"Product\" (\"Name\", \"Description\", \"CostPrice\" )  VALUES ( %s, %s, %s ) RETURNING \"ProductID\"",(body.get("Name",None), body.get("Description",None), Decimal(body.get("CostPrice", 0))))
     row = cursor.fetchone()
     return {'ProductID':row[0]}
 
