@@ -67,7 +67,7 @@ def get_products(cursor):
     result = '['
     result += ','.join(list)
     result += ']'
-    return done(result)
+    return result
 
 def parse_row(row):
     result = '{'
