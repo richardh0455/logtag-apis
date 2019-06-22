@@ -39,7 +39,7 @@ def lambda_handler(event, context):
     try:
         cursor = connection.cursor()
         if event.get("Method","") =="GET":
-            value = get_products(cursor, event["query"])
+            value = get_products(cursor)
         elif event.get("Method","")  =="POST":
             value = create_product(cursor, event["body"])
         else:
@@ -67,8 +67,6 @@ def get_products(cursor):
     result = '['
     result += ','.join(list)
     result += ']'
-    connection.commit()
-    cursor.close()
     return done(result)
 
 def parse_row(row):
