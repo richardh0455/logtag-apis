@@ -73,7 +73,7 @@ def get_products(cursor):
 
 def parse_row(row):
     result = '{'
-    result += "\"ID\":\""+str(row[0])+"\","
+    result += "\"ProductID\":\""+str(row[0])+"\","
     result += "\"Name\":\""+row[1]+"\","
     result += "\"Description\":\""+row[2]+"\","
     result += "\"Cost_Price\":\""+str(row[3])+"\""
