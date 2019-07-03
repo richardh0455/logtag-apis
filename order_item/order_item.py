@@ -55,7 +55,7 @@ def lambda_handler(event, context):
 
 def update_order_item(cursor, line_id, order_id, item):
     variationID = item["VariationID"]
-    if(item["VariationID"] == "NULL"):
+    if(item["VariationID"] == "NULL" || item["VariationID"] == "None"  ):
         variationID = "0"
     cursor.execute("UPDATE public.\"InvoiceLine\" SET \"Quantity\" = %s, \"ProductID\" = %s, \"Pricing\" = %s, \"VariationID\" = %s WHERE \"LineID\"= %s AND \"InvoiceID\"= %s", (int(item["Quantity"]), int(item["ProductID"]), Decimal(item["Price"]),int(variationID), int(line_id), int(order_id)))
     return {"AffectedRows":cursor.rowcount}
